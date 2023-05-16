@@ -1,5 +1,5 @@
 import karax/[karaxdsl, kbase, vdom, vstyles]
-import karkas/components/[box, toppanel]
+import karkas/components/[box, toppanel, bottompanel, vbox]
 
 import pages, state
 
@@ -9,6 +9,7 @@ var
   homeEntry = Box(style: style {padding: kstring"10px"})
   aboutEntry = Box(style: style {padding: kstring"10px"})
   nimEntry = Box(style: style {padding: kstring"10px"})
+  footer = BottomPanel(style: style {background: kstring"lightgray", height: kstring"200px"})
 
 
 proc render*(bodyWrapper: VNode): VNode =
@@ -32,8 +33,12 @@ proc render*(bodyWrapper: VNode): VNode =
         nimEntry.render buildHtml(tdiv) do:
           a(href = kstring"https://nim-lang.org", target = kstring"_blank"):
             text "Nim ⬏"
-      tdiv:
-        main:
-          for node in bodyWrapper:
-            node
+      main:
+        for node in bodyWrapper:
+          node
+      footer. render buildHtml(tdiv) do:
+        var col = VBox()
+        col.render buildHtml(tdiv) do:
+          tdiv: 
+            text kstring"Foo"
 

@@ -4,13 +4,13 @@ import hbox
 
 
 type
-  TopPanel* = object of HBox
+  BottomPanel* = object of HBox
     sticky* = false
 
 
-proc render*(self: TopPanel, bodyWrapper: VNode): VNode =
+proc render*(self: BottomPanel, bodyWrapper: VNode): VNode =
   let
-    defaultStyle = style {top: kstring"0", width: kstring"100%"}
+    defaultStyle = style {bottom: kstring"0", width: kstring"100%"}
     stickyStyle =
       if self.sticky:
         style {position: kstring"sticky"}
