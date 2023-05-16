@@ -1,13 +1,15 @@
-import karax/[karaxdsl, vdom, vstyles]
+import karax/[vdom, vstyles]
 
 
 type
   Component* = object of RootObj
-    id*: int = 0
+    kind* = VNodeKind.tdiv
     style*: VStyle
     events*: seq[(EventKind, EventHandler)]
 
 proc render*(self: Component, bodyWrapper: VNode): VNode =
+  result = newVNode(self.kind)
+
   let
     defaultStyle = style()
     customStyle =
@@ -17,10 +19,10 @@ proc render*(self: Component, bodyWrapper: VNode): VNode =
         style()
     style = defaultStyle.merge(customStyle)
 
-  result = buildHtml:
-    tdiv(style = style):
-      for node in bodyWrapper:
-        node
+  result.style = style
+
+  for node in bodyWrapper:
+    result.add node
 
   for event in self.events:
     result.events.add (event[0], event[1], nil)

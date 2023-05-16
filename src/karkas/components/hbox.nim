@@ -5,7 +5,7 @@ import component
 
 type
   Direction* = enum
-    rightToLeft, leftToRight
+    leftToRight, rightToLeft
   HBox* = object of Component
     direction* = Direction.leftToRight
 
