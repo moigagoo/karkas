@@ -31,7 +31,7 @@ proc render*(bodyWrapper: VNode): VNode =
               text "About"
         nimEntry.render buildHtml(tdiv) do:
           a(href = kstring"https://nim-lang.org", target = kstring"_blank"):
-            text "Nim ⬏"
+            text "Nim ⬏"
       tdiv:
         main:
           for node in bodyWrapper:
