@@ -22,7 +22,7 @@ proc render*(bodyWrapper: VNode): VNode =
       main:
         for node in bodyWrapper:
           node
-      footer. render buildHtml(tdiv) do:
+      footer.render buildHtml(tdiv) do:
         var
           col1 = VBox()
           col2 = VBox()

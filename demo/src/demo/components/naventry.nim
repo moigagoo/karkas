@@ -20,18 +20,23 @@ type
 
 proc render*(self: NavEntry): VNode =
   let
+    active = self.internal and self.page == state.currentPage
     defaultStyle = style {padding: kstring"10px"}
+    activeStyle =
+      if active:
+        style {borderBottom: kstring "1px solid", fontWeight: kstring"bold"}
+      else:
+        style()
     customStyle =
       if not self.style.isNil:
         self.style
       else:
         style()
-    style = defaultStyle.merge(customStyle)
+    style = defaultStyle.merge(activeStyle).merge(customStyle)
     bodyWrapper = buildHtml(tdiv):
       if self.internal:
-        if state.currentPage == self.page:
-          bold:
-            text kstring self.title
+        if active:
+          text kstring self.title
         else:
           a(href = kstring self.url):
             text kstring self.title
