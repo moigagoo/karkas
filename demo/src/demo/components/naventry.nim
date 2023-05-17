@@ -21,10 +21,10 @@ type
 proc render*(self: NavEntry): VNode =
   let
     active = self.internal and self.page == state.currentPage
-    defaultStyle = style {padding: kstring"10px"}
+    defaultStyle = style {margin: kstring"10px"}
     activeStyle =
       if active:
-        style {borderBottom: kstring "1px solid", fontWeight: kstring"bold"}
+        style {fontWeight: kstring"bold"}
       else:
         style()
     customStyle =
