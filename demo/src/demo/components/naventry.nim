@@ -1,6 +1,6 @@
 import karax/[karaxdsl, kbase, vdom, vstyles]
 
-import karkas/components/box
+import karkas/box
 
 import ../[pages, state]
 
