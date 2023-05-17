@@ -1,14 +1,14 @@
 import karax/[karaxdsl, kbase, vdom, vstyles]
-import karkas/components/[box, toppanel, bottompanel, vbox]
+import karkas/components/[toppanel, bottompanel, vbox]
 
-import pages, state
+import components/naventry
 
 
 var
   navbar = TopPanel(sticky: true, style: style {background: kstring"white", boxShadow: kstring"0 10px 10px lightgray"})
-  homeEntry = Box(style: style {padding: kstring"10px"})
-  aboutEntry = Box(style: style {padding: kstring"10px"})
-  nimEntry = Box(style: style {padding: kstring"10px"})
+  homeEntry = NavEntry(title: "Home", url: "#/", internal: true, page: Page.index)
+  aboutEntry = NavEntry(title: "About", url: "#/about/", internal: true, page: Page.about)
+  nimEntry = NavEntry(title: "Nim ⬏", url: "https://nim-lang.org", internal: false)
   footer = BottomPanel(style: style {background: kstring"lightgray", height: kstring"200px"})
 
 
@@ -16,29 +16,21 @@ proc render*(bodyWrapper: VNode): VNode =
   buildHtml:
     tdiv:
       navbar.render buildHtml(tdiv) do:
-        homeEntry.render buildHtml(tdiv) do:
-          if currentPage == Page.index:
-            bold:
-              text "Home"
-          else:
-            a(href = "#/"):
-              text "Home"
-        aboutEntry.render buildHtml(tdiv) do:
-          if currentPage == Page.about:
-            bold:
-              text "About"
-          else:
-            a(href = "#/about/"):
-              text "About"
-        nimEntry.render buildHtml(tdiv) do:
-          a(href = kstring"https://nim-lang.org", target = kstring"_blank"):
-            text "Nim ⬏"
+        homeEntry.render()
+        aboutEntry.render()
+        nimEntry.render()
       main:
         for node in bodyWrapper:
           node
       footer. render buildHtml(tdiv) do:
-        var col = VBox()
-        col.render buildHtml(tdiv) do:
-          tdiv: 
-            text kstring"Foo"
+        var
+          col1 = VBox()
+          col2 = VBox()
+
+        col1.render buildHtml(tdiv) do:
+          homeEntry.render()
+          aboutEntry.render()
+
+        col2.render buildHtml(tdiv) do:
+          nimEntry.render()
 
