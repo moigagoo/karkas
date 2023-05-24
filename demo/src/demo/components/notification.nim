@@ -10,11 +10,18 @@ type
     nkind* = NotificationKind.info
     title*: string
     contentWrapper*: VNode
+    visible* = true
 
 
 proc render*(self: Notification): VNode =
   let
-    defaultStyle = style {border: kstring"1px solid", width: kstring"100%", height: kstring"80px"}
+    defaultStyle = style {
+      border: kstring"1px solid",
+      width: kstring"100%",
+      height: kstring"80px",
+      transition: kstring"all .2s",
+      transform: if self.visible: kstring"translateX(0)" else: kstring"translateX(100vw)"
+    }
     kindStyle = case self.nkind
       of info:
         style {background: kstring"lightyellow"}

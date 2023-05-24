@@ -47,11 +47,12 @@ proc render*(context: Context): VNode =
               n.events = @{
                 onclick: proc(event: Event, target: VNode) {.closure.} =
                   let i = state.notifications.find(n)
-                  state.notifications.delete(i)
+                  state.notifications[i].visible = false
                   redraw()
               }
 
-              state.notifications.add n
+              state.notifications.push n
+
       rightSide.render buildHtml(tdiv) do:
         for k in NotificationKind:
           let hb = HBox()
