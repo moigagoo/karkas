@@ -56,7 +56,7 @@ proc render*(context: Context): VNode =
         for k in NotificationKind:
           let hb = HBox()
           hb.render buildHtml(tdiv) do:
-            input(name = kstring"nkind", value = kstring $k, `type` = kstring"radio", id = kstring $k):
+            input(name = kstring"nkind", value = kstring $k, `type` = kstring"radio", id = kstring $k, checked = (k == nkind).toChecked):
               proc onChange(event: Event, target: VNode) =
                 nkind = parseEnum[NotificationKind]($target.value)
             label(`for` = kstring $k):
