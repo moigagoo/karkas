@@ -1,7 +1,8 @@
 import karax/[karaxdsl, kbase, vdom, vstyles]
-import karkas/[toppanel, bottompanel, vbox]
+import karkas/[toppanel, bottompanel, vbox, floatingbox]
 
-import components/naventry
+import state
+import components/[naventry, notification]
 
 
 var
@@ -10,6 +11,7 @@ var
   aboutEntry = NavEntry(title: "About", url: "#/about/", internal: true, page: Page.about)
   nimEntry = NavEntry(title: "Nim ⬏", url: "https://nim-lang.org", internal: false)
   footer = BottomPanel(style: style {background: kstring"lightgray", height: kstring"200px"})
+  notificationBox = FloatingBox()
 
 
 proc render*(bodyWrapper: VNode): VNode =
@@ -33,4 +35,7 @@ proc render*(bodyWrapper: VNode): VNode =
 
         col2.render buildHtml(tdiv) do:
           nimEntry.render()
+      notificationBox.render buildHtml(tdiv) do:
+        for n in state.notifications:
+          n.render()
 

@@ -1,5 +1,8 @@
 import pages
+import components/notification
 
 
-var currentPage*: Page
+var
+  currentPage*: Page
+  notifications*: seq[Notification]
 
