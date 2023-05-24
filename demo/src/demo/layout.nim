@@ -11,7 +11,7 @@ var
   aboutEntry = NavEntry(title: "About", url: "#/about/", internal: true, page: Page.about)
   nimEntry = NavEntry(title: "Nim ⬏", url: "https://nim-lang.org", internal: false)
   footer = BottomPanel(style: style {background: kstring"lightgray", height: kstring"200px"})
-  notificationBox = FloatingBox()
+  notificationBox = FloatingBox(horizontalPosition: HorizontalPosition.center, direction: Direction.bottomToTop)
 
 
 proc render*(bodyWrapper: VNode): VNode =

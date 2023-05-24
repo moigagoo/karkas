@@ -27,7 +27,7 @@ proc render*(self: FloatingBox, bodyWrapper: VNode): VNode =
       of HorizontalPosition.left:
         style {StyleAttr.left: kstring"0"}
       of HorizontalPosition.center:
-        style {StyleAttr.left: kstring"50%"}
+        style {StyleAttr.left: kstring"50%", StyleAttr.transform: kstring"translateX(-50%)"}
     customStyle =
       if not self.style.isNil:
         self.style
