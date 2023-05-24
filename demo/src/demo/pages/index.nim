@@ -29,7 +29,7 @@ proc render*(context: Context): VNode =
             p:
               text kstring entryText
         var
-          n = Notification(nkind: NotificationKind.info, title: "Pressed", content: content)
+          n = Notification(nkind: NotificationKind.info, title: "Click to close", content: content)
 
         n.events = @{
           EventKind.onclick: proc(event: Event, target: VNode) {.closure.} =
