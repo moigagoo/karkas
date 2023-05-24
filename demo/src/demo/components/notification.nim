@@ -9,7 +9,7 @@ type
   Notification* = object of Box
     nkind* = NotificationKind.info
     title*: string
-    content*: VNode
+    contentWrapper*: VNode
 
 
 proc render*(self: Notification): VNode =
@@ -36,7 +36,7 @@ proc render*(self: Notification): VNode =
         tdiv(style = {fontWeight: kstring"bold"}): 
           text kstring self.title
         tdiv:
-          for node in self.content:
+          for node in self.contentWrapper:
             node
 
   var

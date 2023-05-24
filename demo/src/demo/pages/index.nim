@@ -25,14 +25,14 @@ proc render*(context: Context): VNode =
       text "Press me"
       proc onClick(event: Event, target: VNode) =
         let
-          content = buildHtml(tdiv):
+          contentWrapper = buildHtml(tdiv):
             p:
               text kstring entryText
         var
-          n = Notification(nkind: NotificationKind.info, title: "Click to close", content: content)
+          n = Notification(nkind: NotificationKind.info, title: "Click to close", contentWrapper: contentWrapper)
 
         n.events = @{
-          EventKind.onclick: proc(event: Event, target: VNode) {.closure.} =
+          onclick: proc(event: Event, target: VNode) {.closure.} =
             let i = state.notifications.find(n)
             state.notifications.delete(i)
             redraw()
