@@ -49,9 +49,17 @@ proc render*(context: Context): VNode =
                   let i = state.notifications.find(n)
                   state.notifications[i].visible = false
                   redraw()
+
+                  discard setTimeout(
+                    proc =
+                      state.notifications.delete(i)
+                      redraw(),
+                    500 
+                  )
               }
 
-              state.notifications.push n
+              state.notifications.add n
+
 
       rightSide.render buildHtml(tdiv) do:
         for k in NotificationKind:

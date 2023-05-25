@@ -20,7 +20,11 @@ proc render*(self: Notification): VNode =
       width: kstring"100%",
       height: kstring"80px",
       transition: kstring"all .2s",
-      transform: if self.visible: kstring"translateX(0)" else: kstring"translateX(100vw)"
+      transform: 
+        if self.visible:
+          kstring"translateX(0) scaleY(100%)"
+        else:
+          kstring"translateX(100%) scaleY(0)",
     }
     kindStyle = case self.nkind
       of info:
