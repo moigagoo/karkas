@@ -36,6 +36,7 @@ proc render*(bodyWrapper: VNode): VNode =
         col2.render buildHtml(tdiv) do:
           nimEntry.render()
       notificationBox.render buildHtml(tdiv) do:
-        for n in state.notifications:
+        for r in state.notifications:
+          let n = r[]
           n.render()
 

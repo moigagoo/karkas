@@ -4,5 +4,5 @@ import components/notification
 
 var
   currentPage*: Page
-  notifications*: seq[Notification]
+  notifications*: seq[ref Notification]
 

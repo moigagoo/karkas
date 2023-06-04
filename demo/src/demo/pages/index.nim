@@ -36,25 +36,25 @@ proc render*(context: Context): VNode =
         buttonBox.render buildHtml(tdiv) do:
           button:
             text "Press me"
-            proc onClick(event: Event, target: VNode) =
-              let
-                contentWrapper = buildHtml(tdiv):
-                  p:
-                    text kstring entryText
+            proc onclick(event: Event, target: VNode) =
               var
-                n = Notification(nkind: nkind, title: "Click to close", contentWrapper: contentWrapper)
+                n = new Notification
 
+              n.nkind = nkind
+              n.title = "Click to close"
+              n.contentWrapper = buildHtml(tdiv):
+                p:
+                  text kstring entryText
               n.events = @{
                 onclick: proc(event: Event, target: VNode) {.closure.} =
-                  let i = state.notifications.find(n)
-                  state.notifications[i].visible = false
+                  n.visible = false
                   redraw()
-
                   discard setTimeout(
                     proc =
+                      let i = state.notifications.find(n)
                       state.notifications.delete(i)
                       redraw(),
-                    500 
+                    500
                   )
               }
 
