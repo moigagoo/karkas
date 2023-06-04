@@ -45,21 +45,8 @@ proc render*(context: Context): VNode =
               n.contentWrapper = buildHtml(tdiv):
                 p:
                   text kstring entryText
-              n.events = @{
-                onclick: proc(event: Event, target: VNode) {.closure.} =
-                  n.visible = false
-                  redraw()
-                  discard setTimeout(
-                    proc =
-                      let i = state.notifications.find(n)
-                      state.notifications.delete(i)
-                      redraw(),
-                    500
-                  )
-              }
 
-              state.notifications.add n
-
+              state.notifications.push(n)
 
       rightSide.render buildHtml(tdiv) do:
         for k in NotificationKind:

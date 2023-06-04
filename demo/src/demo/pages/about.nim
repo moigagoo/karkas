@@ -1,7 +1,8 @@
-import karax/[karaxdsl, kbase, kdom, vdom]
+import karax/[karax, karaxdsl, kbase, kdom, vdom]
 import kraut/context
 
 import ../[pages, state, layout]
+import ../components/notification
 
 
 proc render*(context: Context): VNode =
@@ -10,7 +11,28 @@ proc render*(context: Context): VNode =
 
   layout.render buildHtml(tdiv) do:
     h1: text "about"
-    for _ in 1..10:
+
+    button:
+      text kstring"Press me"
+      proc onClick =
+        var n = new Notification
+
+        n.title = "About page opened"
+        n.contentWrapper = buildHtml(tdiv):
+          p:
+            text kstring"This is something"
+            bold:
+              text kstring"bold"
+            text kstring"."
+          p:
+            text kstring"This is a "
+            a(href = kstring"#/"):
+              text "link"
+            text kstring"."
+
+        state.notifications.push(n)
+
+    for _ in 1..5:
       p:
         text kstring"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quid est igitur, cur ita semper deum appellet Epicurus beatum et aeternum? Quaesita enim virtus est, non quae relinqueret naturam, sed quae tueretur. Duo Reges: constructio interrete. Illa argumenta propria videamus, cur omnia sint paria peccata. Qui est in parvis malis. Qui ita affectus, beatum esse numquam probabis; Dicimus aliquem hilare vivere; Illis videtur, qui illud non dubitant bonum dicere -;"
       p:
