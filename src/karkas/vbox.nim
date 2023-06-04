@@ -1,21 +1,21 @@
 import karax/[kbase, vdom, vstyles]
 
-import component
+import box
 
 
 type
-  Direction* = enum
+  VDirection* = enum
     topToBottom, bottomToTop
-  VBox* = object of Component
-    direction* = Direction.topToBottom
+  VBox* = object of Box
+    direction* = VDirection.topToBottom
 
 
 proc render*(self: VBox, bodyWrapper: VNode): VNode =
   let
     defaultStyle = style {display: kstring"flex"}
     directionStyle = case self.direction
-      of Direction.topToBottom: style {flexDirection: kstring"column"}
-      of Direction.bottomToTop: style {flexDirection: kstring"column-reverse"}
+      of VDirection.topToBottom: style {flexDirection: kstring"column"}
+      of VDirection.bottomToTop: style {flexDirection: kstring"column-reverse"}
     customStyle =
       if not self.style.isNil:
         self.style
@@ -24,7 +24,7 @@ proc render*(self: VBox, bodyWrapper: VNode): VNode =
     style = defaultStyle.merge(directionStyle).merge(customStyle)
 
   var
-    super = Component(self)
+    super = Box(self)
 
   super.style = style
   super.events = self.events

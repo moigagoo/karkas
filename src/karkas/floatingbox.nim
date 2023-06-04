@@ -4,36 +4,36 @@ import vbox
 
 
 type
-  VerticalPosition* = enum
+  VPosition* = enum
     top, bottom
-  HorizontalPosition* = enum
+  HPosition* = enum
     right, left, center
   FloatingBox* = object of VBox
-    verticalPosition* = VerticalPosition.top
-    horizontalPosition* = HorizontalPosition.right
+    vPosition* = VPosition.top
+    hPosition* = HPosition.right
 
 
 proc render*(self: FloatingBox, bodyWrapper: VNode): VNode =
   let
     defaultStyle = style {position: kstring"fixed", width: kstring"20%"}
-    verticalPositionStyle = case self.verticalPosition
-      of VerticalPosition.top:
+    vPositionStyle = case self.vPosition
+      of VPosition.top:
         style {StyleAttr.top: kstring"0"}
-      of VerticalPosition.bottom:
+      of VPosition.bottom:
         style {StyleAttr.bottom: kstring"0"}
-    horizontalPositionStyle = case self.horizontalPosition
-      of HorizontalPosition.right:
+    hPositionStyle = case self.hPosition
+      of HPosition.right:
         style {StyleAttr.right: kstring"0"}
-      of HorizontalPosition.left:
+      of HPosition.left:
         style {StyleAttr.left: kstring"0"}
-      of HorizontalPosition.center:
+      of HPosition.center:
         style {StyleAttr.left: kstring"50%", StyleAttr.transform: kstring"translateX(-50%)"}
     customStyle =
       if not self.style.isNil:
         self.style
       else:
         style()
-    style = defaultStyle.merge(verticalPositionStyle).merge(horizontalPositionStyle).merge(customStyle)
+    style = defaultStyle.merge(vPositionStyle).merge(hPositionStyle).merge(customStyle)
 
   var
     super = VBox(self)
