@@ -30,7 +30,7 @@ proc render*(context: Context): VNode =
     form.render buildHtml(tdiv) do:
       leftSide.render buildHtml(tdiv) do:
         textareaBox.render buildHtml(tdiv) do:
-          textarea(autofocus = "1"):
+          textarea(autofocus = kstring"1", placeholder = kstring entryText):
             proc onKeyUp(event: Event, target: VNode) =
               entryText = $target.value
         buttonBox.render buildHtml(tdiv) do:
