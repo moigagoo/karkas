@@ -15,8 +15,10 @@ proc render*(context: Context): VNode =
     button:
       text kstring"Press me"
       proc onClick =
-        var n = new Notification
+        var
+          n = new Notification
 
+        n.nkind = NotificationKind.success
         n.title = "About page opened"
         n.contentwrapper = buildhtml(tdiv):
           p:
