@@ -22,7 +22,7 @@ proc render*(context: Context): VNode =
         n.title = "About page opened"
         n.contentwrapper = buildhtml(tdiv):
           p:
-            text kstring"this is something"
+            text kstring"this is something "
             bold:
               text kstring"bold"
             text kstring"."
