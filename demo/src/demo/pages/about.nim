@@ -18,7 +18,7 @@ proc render*(context: Context): VNode =
         var
           n = new Notification
 
-        n.nkind = NotificationKind.success
+        n.kind = NotificationKind.success
         n.title = "About page opened"
         n.contentwrapper = buildhtml(tdiv):
           p:

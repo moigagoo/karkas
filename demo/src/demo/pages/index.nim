@@ -40,7 +40,7 @@ proc render*(context: Context): VNode =
               var
                 n = new Notification
 
-              n.nkind = nkind
+              n.kind = nkind
               n.title = "Click to close"
               n.contentWrapper = buildHtml(tdiv):
                 p:

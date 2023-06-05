@@ -7,7 +7,7 @@ type
   NotificationKind* = enum
     info, success, warning, error
   Notification* = object of Box
-    nkind* = NotificationKind.info
+    kind* = NotificationKind.info
     title*: string
     contentWrapper*: VNode
     visible* = true
@@ -26,7 +26,7 @@ proc render*(self: Notification): VNode =
         else:
           kstring"translateX(100%) scaleY(0)",
     }
-    kindStyle = case self.nkind
+    kindStyle = case self.kind
       of info:
         style {background: kstring"lightyellow"}
       of success:
