@@ -12,10 +12,10 @@ type
 
 proc render*(self: HBox, bodyWrapper: VNode): VNode =
   let
-    defaultStyle = style {display: kstring"flex"}
+    defaultStyle = style {StyleAttr.display: kstring"flex"}
     directionStyle = case self.direction
-      of HDirection.leftToRight: style {flexDirection: kstring"row"}
-      of HDirection.rightToLeft: style {flexDirection: kstring"row-reverse"}
+      of HDirection.leftToRight: style {StyleAttr.flexDirection: kstring"row"}
+      of HDirection.rightToLeft: style {StyleAttr.flexDirection: kstring"row-reverse"}
     customStyle =
       if not self.style.isNil:
         self.style

@@ -12,10 +12,10 @@ type
 
 proc render*(self: VBox, bodyWrapper: VNode): VNode =
   let
-    defaultStyle = style {display: kstring"flex"}
+    defaultStyle = style {StyleAttr.display: kstring"flex"}
     directionStyle = case self.direction
-      of VDirection.topToBottom: style {flexDirection: kstring"column"}
-      of VDirection.bottomToTop: style {flexDirection: kstring"column-reverse"}
+      of VDirection.topToBottom: style {StyleAttr.flexDirection: kstring"column"}
+      of VDirection.bottomToTop: style {StyleAttr.flexDirection: kstring"column-reverse"}
     customStyle =
       if not self.style.isNil:
         self.style

@@ -7,6 +7,7 @@ type
     style*: VStyle
     events*: seq[(EventKind, EventHandler)]
 
+
 proc render*(self: Component, bodyWrapper: VNode): VNode =
   result = newVNode(self.kind)
 

@@ -15,7 +15,7 @@ type
 
 proc render*(self: FloatingBox, bodyWrapper: VNode): VNode =
   let
-    defaultStyle = style {position: kstring"fixed", width: kstring"20%"}
+    defaultStyle = style {StyleAttr.position: kstring"fixed", StyleAttr.width: kstring"20%"}
     vPositionStyle = case self.vPosition
       of VPosition.top:
         style {StyleAttr.top: kstring"0"}

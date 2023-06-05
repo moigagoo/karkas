@@ -11,7 +11,7 @@ type
 proc render*(self: Box, bodyWrapper: VNode): VNode =
   let
     defaultStyle = style()
-    flexStyle = style {flex: kstring self.flex}
+    flexStyle = style {StyleAttr.flex: kstring self.flex}
     customStyle =
       if not self.style.isNil:
         self.style

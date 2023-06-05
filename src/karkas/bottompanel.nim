@@ -10,10 +10,10 @@ type
 
 proc render*(self: BottomPanel, bodyWrapper: VNode): VNode =
   let
-    defaultStyle = style {bottom: kstring"0", width: kstring"100%"}
+    defaultStyle = style {StyleAttr.bottom: kstring"0", StyleAttr.width: kstring"100%"}
     stickyStyle =
       if self.sticky:
-        style {position: kstring"sticky"}
+        style {StyleAttr.position: kstring"sticky"}
       else:
         style()
     customStyle =
