@@ -1,6 +1,6 @@
 import karax/[karaxdsl, kbase, vdom, vstyles]
 
-import karkas/[box, vbox]
+import karkas/[box, vbox, hbox]
 
 
 type
@@ -11,6 +11,7 @@ type
     title*: string
     contentWrapper*: VNode
     visible* = true
+    closeButton*: Box
 
 
 proc render*(self: Notification): VNode =
@@ -42,10 +43,20 @@ proc render*(self: Notification): VNode =
         style()
     style = defaultStyle.merge(kindStyle).merge(customStyle)
     bodyWrapper = buildHtml(tdiv):
-      let container = VBox()
+      let
+        container = VBox()
+        header = HBox()
+        body = Box()
+        titleBox = HBox(flex: "9", style: style {fontWeight: kstring"bold"})
+        closeBox = HBox(flex: "1", direction: HDirection.rightToLeft)
       container.render buildHtml(tdiv) do:
-        tdiv(style = {fontWeight: kstring"bold"}): 
-          text kstring self.title
+        header.render buildHtml(tdiv) do:
+          titleBox.render buildHtml(tdiv) do:
+            text kstring self.title
+          closeBox.render buildHtml(tdiv) do:
+            self.closeButton.render buildHtml(tdiv) do:
+              button:
+                text kstring"❌"
         tdiv:
           for node in self.contentWrapper:
             node

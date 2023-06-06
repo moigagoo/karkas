@@ -18,7 +18,8 @@ proc render*(context: Context): VNode =
   document.title = "index"
 
   layout.render buildHtml(tdiv) do:
-    h1: text "index"
+    h1:
+      text "index"
 
     let
       form = HBox()
@@ -45,6 +46,7 @@ proc render*(context: Context): VNode =
               n.contentWrapper = buildHtml(tdiv):
                 p:
                   text kstring entryText
+              n.closeButton = Box()
 
               state.notifications.push(n)
 
