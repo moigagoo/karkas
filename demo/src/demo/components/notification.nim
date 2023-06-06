@@ -52,8 +52,8 @@ proc render*(self: Notification): VNode =
         container = VBox()
         header = HBox()
         body = Box()
-        titleBox = HBox(flex: "9", style: style {fontWeight: kstring"bold"})
-        closeBox = HBox(flex: "1", direction: HDirection.rightToLeft)
+        titleBox = HBox(flex: "8", style: style {fontWeight: kstring"bold"})
+        closeBox = HBox(flex: "2", direction: HDirection.rightToLeft)
       container.render buildHtml(tdiv) do:
         header.render buildHtml(tdiv) do:
           titleBox.render buildHtml(tdiv) do:
