@@ -1,3 +1,5 @@
+import std/strformat
+
 import karax/[karaxdsl, kbase, vdom, vstyles]
 
 import karkas/[box, vbox, hbox, button]
@@ -12,6 +14,7 @@ type
     contentWrapper*: VNode
     visible* = true
     closeButton*: Button
+    ttl* = 5
 
 
 proc render*(self: Notification): VNode =
@@ -55,7 +58,7 @@ proc render*(self: Notification): VNode =
             text kstring self.title
           closeBox.render buildHtml(tdiv) do:
             self.closeButton.render buildHtml(tdiv) do:
-              text kstring"❌"
+              text kstring fmt"❌ ({self.ttl})"
         body.render buildHtml(tdiv) do:
           for node in self.contentWrapper:
             node
