@@ -1,6 +1,6 @@
 import std/strformat
 
-import karax/[karaxdsl, kbase, vdom, vstyles]
+import karax/[karaxdsl, kbase, kdom, vdom, vstyles]
 
 import karkas/[box, vbox, hbox, button]
 
@@ -14,7 +14,9 @@ type
     contentWrapper*: VNode
     visible* = true
     closeButton*: Button
-    ttl* = 5
+    ttl* = 10
+    ttlClock*: Interval
+    ttlTimer*: TimeOut
 
 
 proc render*(self: Notification): VNode =

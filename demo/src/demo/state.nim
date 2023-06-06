@@ -11,6 +11,10 @@ var
 
 proc removeNotification*(notification: ref Notification) =
   notification.visible = false
+
+  clearInterval notification.ttlClock
+  clearTimeout notification.ttlTimer
+
   redraw()
 
   discard setTimeout(
@@ -28,15 +32,15 @@ func push*(notifications: var seq[ref Notification], notification: ref Notificat
 
   notifications.add(notification)
 
-  discard setInterval(
+  notification.ttlClock = setInterval(
     proc =
       dec notification.ttl
       redraw(),
     1000
   )
 
-  discard setTimeout(
+  notification.ttlTimer = setTimeout(
     proc = removeNotification(notification),
-    5000
+    notification.ttl * 1000
   )
 
