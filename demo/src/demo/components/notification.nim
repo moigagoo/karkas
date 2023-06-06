@@ -1,6 +1,6 @@
 import karax/[karaxdsl, kbase, vdom, vstyles]
 
-import karkas/[box, vbox, hbox]
+import karkas/[box, vbox, hbox, button]
 
 
 type
@@ -11,7 +11,7 @@ type
     title*: string
     contentWrapper*: VNode
     visible* = true
-    closeButton*: Box
+    closeButton*: Button
 
 
 proc render*(self: Notification): VNode =
@@ -55,8 +55,7 @@ proc render*(self: Notification): VNode =
             text kstring self.title
           closeBox.render buildHtml(tdiv) do:
             self.closeButton.render buildHtml(tdiv) do:
-              button:
-                text kstring"❌"
+              text kstring"❌"
         body.render buildHtml(tdiv) do:
           for node in self.contentWrapper:
             node

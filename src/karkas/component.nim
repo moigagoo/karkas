@@ -2,14 +2,13 @@ import karax/[vdom, vstyles]
 
 
 type
-  Component* = object of RootObj
-    vNodeKind* = VNodeKind.tdiv
+  Component*[K: static VNodeKind = VNodeKind.tdiv] = object of RootObj
     style*: VStyle
     events*: seq[(EventKind, EventHandler)]
 
 
-proc render*(self: Component, bodyWrapper: VNode): VNode =
-  result = newVNode(self.vNodeKind)
+proc render*[K: static VNodeKind](self: Component[K], bodyWrapper: VNode): VNode =
+  result = newVNode(K)
 
   let
     defaultStyle = style()

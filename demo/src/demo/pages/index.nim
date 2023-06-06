@@ -46,7 +46,6 @@ proc render*(context: Context): VNode =
               n.contentWrapper = buildHtml(tdiv):
                 p:
                   text kstring entryText
-              n.closeButton = Box()
 
               state.notifications.push(n)
 

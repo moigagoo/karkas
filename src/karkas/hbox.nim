@@ -4,9 +4,10 @@ import box
 
 
 type
+  Super = Box
   HDirection* = enum
     leftToRight, rightToLeft
-  HBox* = object of Box
+  HBox* = object of Super
     direction* = HDirection.leftToRight
 
 
@@ -24,7 +25,7 @@ proc render*(self: HBox, bodyWrapper: VNode): VNode =
     style = defaultStyle.merge(directionStyle).merge(customStyle)
 
   var
-    super = Box(self)
+    super = Super(self)
 
   super.style = style
   super.events = self.events

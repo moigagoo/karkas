@@ -4,7 +4,8 @@ import hbox
 
 
 type
-  TopPanel* = object of HBox
+  Super = HBox
+  TopPanel* = object of Super
     sticky* = false
 
 
@@ -24,7 +25,7 @@ proc render*(self: TopPanel, bodyWrapper: VNode): VNode =
     style = defaultStyle.merge(stickyStyle).merge(customStyle)
 
   var
-    super = HBox(self)
+    super = Super(self)
 
   super.style = style
   super.events = self.events

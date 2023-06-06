@@ -4,9 +4,10 @@ import box
 
 
 type
+  Super = Box
   VDirection* = enum
     topToBottom, bottomToTop
-  VBox* = object of Box
+  VBox* = object of Super
     direction* = VDirection.topToBottom
 
 
@@ -24,7 +25,7 @@ proc render*(self: VBox, bodyWrapper: VNode): VNode =
     style = defaultStyle.merge(directionStyle).merge(customStyle)
 
   var
-    super = Box(self)
+    super = Super(self)
 
   super.style = style
   super.events = self.events

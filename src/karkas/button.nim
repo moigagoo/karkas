@@ -4,21 +4,19 @@ import component
 
 
 type
-  Super = Component[VNodeKind.tdiv]
-  Box* = object of Super
-    flex* = "0"
+  Super = Component[VNodeKind.button]
+  Button* = object of Super
 
 
-proc render*(self: Box, bodyWrapper: VNode): VNode =
+proc render*(self: Button, bodyWrapper: VNode): VNode =
   let
     defaultStyle = style()
-    flexStyle = style {StyleAttr.flex: kstring self.flex}
     customStyle =
       if not self.style.isNil:
         self.style
       else:
         style()
-    style = defaultStyle.merge(flexStyle).merge(customStyle)
+    style = defaultStyle.merge(customStyle)
 
   var
     super = Super(self)

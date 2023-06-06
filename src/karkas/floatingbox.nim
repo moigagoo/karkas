@@ -4,11 +4,12 @@ import vbox
 
 
 type
+  Super = VBox
   VPosition* = enum
     top, bottom
   HPosition* = enum
     right, left, center
-  FloatingBox* = object of VBox
+  FloatingBox* = object of Super
     vPosition* = VPosition.top
     hPosition* = HPosition.right
 
@@ -36,7 +37,7 @@ proc render*(self: FloatingBox, bodyWrapper: VNode): VNode =
     style = defaultStyle.merge(vPositionStyle).merge(hPositionStyle).merge(customStyle)
 
   var
-    super = VBox(self)
+    super = Super(self)
 
   super.style = style
   super.events = self.events
