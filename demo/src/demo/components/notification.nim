@@ -57,7 +57,7 @@ proc render*(self: Notification): VNode =
             self.closeButton.render buildHtml(tdiv) do:
               button:
                 text kstring"❌"
-        tdiv:
+        body.render buildHtml(tdiv) do:
           for node in self.contentWrapper:
             node
 
