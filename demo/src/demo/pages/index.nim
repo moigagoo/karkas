@@ -2,7 +2,7 @@ import std/strutils
 
 import karax/[karax, kbase, karaxdsl, kdom, vdom]
 import kraut/context
-import karkas/[vbox, hbox, box]
+import karkas/layout/[vbox, hbox, box]
 
 import ../[pages, state, layout]
 import ../components/notification

@@ -1,5 +1,5 @@
 import karax/[karaxdsl, kbase, vdom, vstyles]
-import karkas/[toppanel, bottompanel, vbox, floatingbox, hbox, box]
+import karkas/layout/[toppanel, bottompanel, vbox, floatingbox, hbox, box]
 
 import state
 import components/[naventry, notification]

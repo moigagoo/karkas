@@ -2,7 +2,8 @@ import std/strformat
 
 import karax/[karaxdsl, kbase, kdom, vdom, vstyles]
 
-import karkas/[box, vbox, hbox, button]
+import karkas/layout/[box, vbox, hbox]
+import karkas/controls/button
 
 
 type

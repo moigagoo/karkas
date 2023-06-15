@@ -1,6 +1,6 @@
 import karax/[kbase, vdom, vstyles]
 
-import component
+import ../component
 
 
 type
