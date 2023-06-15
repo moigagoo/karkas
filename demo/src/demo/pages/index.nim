@@ -3,6 +3,7 @@ import std/strutils
 import karax/[karax, kbase, karaxdsl, kdom, vdom]
 import kraut/context
 import karkas/layout/[vbox, hbox, box]
+import karkas/controls/button
 
 import ../[pages, state, layout]
 import ../components/notification
@@ -28,6 +29,24 @@ proc render*(context: Context): VNode =
       textareaBox = Box()
       buttonBox = Box()
 
+    var
+      createNotificationButton = Button()
+
+    createNotificationButton.events = @{
+      onclick: proc(event: Event, target: VNode) {.closure.} =
+        var
+          n = new Notification
+
+        n.kind = nkind
+        n.title = "Click to close"
+        n.contentWrapper = buildHtml(tdiv):
+          p:
+            text kstring entryText
+
+        state.notifications.push(n)
+        redraw()
+    }
+
     form.render buildHtml(tdiv) do:
       leftSide.render buildHtml(tdiv) do:
         textareaBox.render buildHtml(tdiv) do:
@@ -35,20 +54,9 @@ proc render*(context: Context): VNode =
             proc onKeyUp(event: Event, target: VNode) =
               entryText = $target.value
         buttonBox.render buildHtml(tdiv) do:
-          button:
+          createNotificationButton.render buildHtml(tdiv) do:
             text "Press me"
-            proc onclick(event: Event, target: VNode) =
-              var
-                n = new Notification
-
-              n.kind = nkind
-              n.title = "Click to close"
-              n.contentWrapper = buildHtml(tdiv):
-                p:
-                  text kstring entryText
-
-              state.notifications.push(n)
-
+    
       rightSide.render buildHtml(tdiv) do:
         for k in NotificationKind:
           let hb = HBox()

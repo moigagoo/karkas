@@ -28,7 +28,7 @@ proc render*(context: Context): VNode =
             text kstring"."
           p:
             text kstring"this is a "
-            a(href = kstring"#/"):
+            a(href = kstring"https://ya.ru", `target` = kstring"_blank"):
               text "link"
             text kstring"."
 

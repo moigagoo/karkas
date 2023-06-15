@@ -10,7 +10,7 @@ type
 
 proc render*(self: Button, bodyWrapper: VNode): VNode =
   let
-    defaultStyle = style()
+    defaultStyle = style {StyleAttr.width: kstring"100%", StyleAttr.height: kstring"100%"}
     customStyle =
       if not self.style.isNil:
         self.style
