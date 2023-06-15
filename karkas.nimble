@@ -10,7 +10,7 @@ srcDir        = "src"
 # Dependencies
 
 requires "nim >= 1.9.3"
-requires "karax >= 1.2.3", "kraut >= 1.0.2", "sauer >= 1.0.2"
+requires "karax >= 1.2.3", "kraut >= 1.0.2"
 
 taskRequires "serve", "nimhttpd >= 1.5.1"
 
