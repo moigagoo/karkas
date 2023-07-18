@@ -1,69 +1,55 @@
 import std/strutils
 
-import karax/[karax, kbase, karaxdsl, kdom, vdom]
+import karax/[karax, kbase, karaxdsl, kdom, vdom, vstyles]
 import kraut/context
-import karkas/layout/[vbox, hbox, box]
-import karkas/controls/button
+import karkas
+import karkas/sugar
 
-import ../[pages, state, layout]
-import ../components/notification
-
-
-var
-  entryText = ""
-  nkind = NotificationKind.info
+import ../pages, ../state
 
 
 proc render*(context: Context): VNode =
   currentPage = Page.index
   document.title = "index"
 
-  layout.render buildHtml(tdiv) do:
-    h1:
-      text "index"
-
-    let
-      form = HBox()
-      leftSide = VBox()
-      rightSide = VBox()
-      textareaBox = Box()
-      buttonBox = Box()
-
-    var
-      createNotificationButton = Button()
-
-    createNotificationButton.events = @{
-      onclick: proc(event: Event, target: VNode) {.closure.} =
-        var
-          n = new Notification
-
-        n.kind = nkind
-        n.title = "Click to close"
-        n.contentWrapper = buildHtml(tdiv):
+  buildHtml:
+    tdiv:
+      tdiv(style = hbox() <- topPanel() <- sticky()):
+        tdiv(style = box()):
           p:
-            text kstring entryText
+            text k"Item 1"
+        tdiv(style = box()):
+          p:
+            text k"Item 2"
 
-        state.notifications.push(n)
-        redraw()
-    }
+      tdiv(style = floatingBox(top, center) <- {width: k"20%", border: k"solid red"}):
+        tdiv(style = vBox()):
+          for i in 1..5:
+            tdiv(style = box() <- {border: k"dotted blue"}):
+              p:
+                text "This is text"
 
-    form.render buildHtml(tdiv) do:
-      leftSide.render buildHtml(tdiv) do:
-        textareaBox.render buildHtml(tdiv) do:
-          textarea(autofocus = kstring"1", placeholder = kstring entryText):
-            proc onKeyUp(event: Event, target: VNode) =
-              entryText = $target.value
-        buttonBox.render buildHtml(tdiv) do:
-          createNotificationButton.render buildHtml(tdiv) do:
-            text "Press me"
-    
-      rightSide.render buildHtml(tdiv) do:
-        for k in NotificationKind:
-          let hb = HBox()
-          hb.render buildHtml(tdiv) do:
-            input(name = kstring"nkind", value = kstring $k, `type` = kstring"radio", id = kstring $k, checked = (k == nkind).toChecked):
-              proc onChange(event: Event, target: VNode) =
-                nkind = parseEnum[NotificationKind]($target.value)
-            label(`for` = kstring $k):
-              text kstring $k
+      h1:
+        text "Index"
+
+      tdiv(style = hbox()):
+        tdiv(style = box(1) <- {border: k"solid"})
+        tdiv(style = box(1) <- hbox() <- {border: k"dotted"}):
+          tdiv(style = box(1)):
+            h2:
+              text "Header"
+            p:
+              text "Paragraph"
+
+          tdiv(style = box(2)):
+            h2:
+              text "Second header"
+            p:
+              text "Paragraph"
+
+          tdiv(style = box(1)): 
+            h2:
+              text "Pure div"
+            p:
+              text "Paragraph"
 
