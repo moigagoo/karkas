@@ -21,3 +21,14 @@ func `<-`*(a: VStyle, b: varargs[(StyleAttr, kstring)]): VStyle =
 
   a.merge(style b)
 
+
+func `<-`*(a: VStyle, b: varargs[(StyleAttr, string)]): VStyle =
+  ## Merge style a with style b where b is constructed on the fly from key-value pairs and values are of type string.
+
+  var kb: seq[(StyleAttr, kstring)]
+
+  for (key, val) in b:
+    kb.add (key, k(val))
+
+  a <- kb
+
