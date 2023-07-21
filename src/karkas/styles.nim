@@ -11,6 +11,8 @@ type
     top, center, bottom
   HPosition* = enum
     left, center, right
+  Side* = enum
+    left, right
  
 
 func box*(size = 0): VStyle =
@@ -51,6 +53,10 @@ func bottomPanel*(sticky = false): VStyle =
 
 func sticky*: VStyle =
   style {StyleAttr.position: k"sticky"}
+
+
+func vBar*: VStyle =
+  style {StyleAttr.height: k"100vh"}
 
 
 func fBox*(vPosition = VPosition.top, hPosition = HPosition.right): VStyle =

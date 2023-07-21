@@ -6,5 +6,5 @@ import pages
 var
   currentPage*: Page
   notifications*: seq[VNode]
-  notificationCounter* = 0
+  notificationCounter*: uint = 0
 
