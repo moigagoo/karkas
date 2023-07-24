@@ -1,5 +1,5 @@
 import karax/[kbase, vstyles]
-import karkas/sugar
+import sugar
 
 
 type
@@ -11,8 +11,6 @@ type
     top, center, bottom
   HPosition* = enum
     left, center, right
-  Side* = enum
-    left, right
  
 
 func box*(size = 0): VStyle =
