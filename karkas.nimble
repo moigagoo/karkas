@@ -10,7 +10,7 @@ srcDir        = "src"
 # Dependencies
 
 requires "nim >= 1.6.14"
-requires "karax >= 1.3.0", "kraut >= 1.0.2"
+requires "karax >= 1.3.0", "kraut >= 1.0.3"
 
 taskRequires "setupBook", "nimib >= 0.3.8", "nimibook >= 0.3.1"
 
