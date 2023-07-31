@@ -10,8 +10,8 @@ bin           = @["tutorial"]
 
 # Dependencies
 
-requires "nim >= 1.9.3"
-requires "karax >= 1.2.3", "kraut >= 1.0.1"
+requires "nim >= 1.6.14"
+requires "karax >= 1.2.3", "kraut >= 1.0.3"
 
 taskRequires "serve", "static_server >= 2.2.1"
 
