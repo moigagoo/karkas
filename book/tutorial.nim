@@ -8,6 +8,8 @@ nbText: """
 
 In this tutorial, we'll learn procs and syntax sugar provided by Karkas and build a layout with them. We'll start with basic rectangles, then play around with vertical and horizontal stacks, and build a form by composing those stacks. Finally, we'll create a layout that can show different content while preserving the basic page structure.
 
+See the complete code of the tutorial app in the Karkas repo: [https://github.com/moigagoo/karkas/tree/develop/tutorial](https://github.com/moigagoo/karkas/tree/develop/tutorial).
+
 
 # Prerequisites
 
@@ -85,6 +87,7 @@ Let's create a couple boxes to get familiar with them.
         tdiv(style = box()):
           p: text "Box two" 
     ```
+
 2. Build the app:
 
     ```shell
