@@ -4,12 +4,12 @@
 
 Karkas is split into two modules: `karkas/styles` and `karkas/sugar`. 
 
-`karkas/styles` contains ready to used styles to turn HTML elements into boxes and containers.
+`karkas/styles` contains ready to use styles to turn HTML elements into boxes and containers.
 
 `karkas/sugar` contains `<-` func that merges two styles and `k` func that turns a `string` into a `kstring`. Those can be used entirely on their own as syntactic sugar to Karax regardless of Karkas's styles.
 
-- [Homepage](https://karkas.nim.town)
-- [Tutotial](/tutorial.html)
+- [Homepage](https://moigagoo.nim.town/karkas)
+- [Tutorial](/tutorial.html)
 - [API Docs](/apidocs/theindex.html)
 - [Repo](https://github.com/moigagoo/karkas)
 

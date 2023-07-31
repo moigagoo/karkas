@@ -1,4 +1,4 @@
-import karax/[kbase, vstyles]
+import karax/vstyles
 import sugar
 
 
@@ -14,10 +14,14 @@ type
  
 
 func box*(size = 0): VStyle =
- style {StyleAttr.flex: k $size}
+  ## Basic rectangular element that can be put inside stacks. 
+  
+  style {StyleAttr.flex: k $size}
 
 
 func hStack*(direction = HDirection.leftToRight): VStyle =
+  ## Horizontal stack. Boxes inside it are stacked horizontally according to ``direction``.
+
   let 
     defaultStyle = style {StyleAttr.display: k"flex"}
     directionStyle = case direction
@@ -30,6 +34,8 @@ func hStack*(direction = HDirection.leftToRight): VStyle =
 
 
 func vStack*(direction = VDirection.topToBottom): VStyle =
+  ## Vertical stack. Boxes inside it are stacked vertically according to ``direction``.
+
   let
     defaultStyle = style {StyleAttr.display: k"flex"}
     directionStyle = case direction
@@ -41,23 +47,36 @@ func vStack*(direction = VDirection.topToBottom): VStyle =
   defaultStyle <- directionStyle
 
 
-func topPanel*(sticky = false): VStyle =
+func topPanel*: VStyle =
+  ## Full-width horizontal panel attached to the top of the page.
+
   style {StyleAttr.top: k"0", StyleAttr.width: k"100%"}
 
 
-func bottomPanel*(sticky = false): VStyle =
+func bottomPanel*: VStyle =
+  ## Full-width horizontal panel attached to the bottom of the page.
+
   style {StyleAttr.bottom: k"0", StyleAttr.width: k"100%"}
 
 
 func sticky*: VStyle =
+  ## Make a top or a bottom panel (or any other element) sticky, i.e. always visible regardless of page scroll.
+
   style {StyleAttr.position: k"sticky"}
 
 
 func vBar*: VStyle =
+  ## Vertical bar that occupies the entire page height. Useful for sidebars.
+
   style {StyleAttr.height: k"100vh"}
 
 
 func fBox*(vPosition = VPosition.top, hPosition = HPosition.right): VStyle =
+  ##[ Floating box. A container that can be positioned over other page elements in nine anchor points based on ``vPosition`` and ``hPosition``.
+
+  Useful for notification stacks.
+  ]##
+
   let
     defaultStyle = style {StyleAttr.position: k"fixed"}
     vPositionStyle = case vPosition
