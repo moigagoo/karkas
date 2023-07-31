@@ -17,7 +17,7 @@ func box*(size = 0): VStyle =
  style {StyleAttr.flex: k $size}
 
 
-func hBox*(direction = HDirection.leftToRight): VStyle =
+func hStack*(direction = HDirection.leftToRight): VStyle =
   let 
     defaultStyle = style {StyleAttr.display: k"flex"}
     directionStyle = case direction
@@ -29,7 +29,7 @@ func hBox*(direction = HDirection.leftToRight): VStyle =
   defaultStyle <- directionStyle
 
 
-func vBox*(direction = VDirection.topToBottom): VStyle =
+func vStack*(direction = VDirection.topToBottom): VStyle =
   let
     defaultStyle = style {StyleAttr.display: k"flex"}
     directionStyle = case direction

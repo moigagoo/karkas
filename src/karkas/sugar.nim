@@ -4,6 +4,9 @@ when defined(js):
   import karax/jdict
 
 
+export kbase, vstyles
+
+
 func k*(x: string): kstring =
   ## Convert string to kstring.
 
