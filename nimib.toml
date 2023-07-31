@@ -1,9 +1,0 @@
-[nimib]
-srcDir = "book"
-homeDir = "docs"
-
-[nimibook]
-title = "Karkas"
-description = "Layout helpers and sugar for Karax"
-git_repository_url = "https://github.com/moigagoo/karkas"
-

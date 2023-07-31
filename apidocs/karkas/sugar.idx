@@ -1,0 +1,5 @@
+nimTitle	sugar	karkas/sugar.html	module src/karkas/sugar		0
+nim	k	karkas/sugar.html#k,string	proc k(x: string): kstring		10
+nim	`<-`	karkas/sugar.html#<-,VStyle,VStyle	proc `<-`(a, b: VStyle): VStyle		16
+nim	`<-`	karkas/sugar.html#<-,VStyle,varargs[]	proc `<-`(a: VStyle; b: varargs[(StyleAttr, kstring)]): VStyle		22
+nimgrp	<-	karkas/sugar.html#<--procs-all	proc		16
