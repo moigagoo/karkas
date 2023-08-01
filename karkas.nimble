@@ -29,6 +29,7 @@ task book, "Generate book":
   exec "./nbook".toExe & " --mm:orc --deepcopy:on build"
 
 after book:
+  cpFile("CNAME", "docs/CNAME")
   cpDir("book/img", "docs/img")
 
 before docs:

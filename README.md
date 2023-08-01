@@ -8,9 +8,9 @@ Karkas is split into two modules: `karkas/styles` and `karkas/sugar`.
 
 `karkas/sugar` contains `<-` func that merges two styles and `k` func that turns a `string` into a `kstring`. Those can be used entirely on their own as syntactic sugar to Karax regardless of Karkas's styles.
 
-- [Homepage](https://moigagoo.nim.town/karkas)
-- [Tutorial](https://moigagoo.nim.town/karkas/tutorial.html)
-- [API Docs](https://moigagoo.nim.town/karkas/apidocs/theindex.html)
+- [Homepage](https://karkas.nim.town)
+- [Tutorial](/tutorial.html)
+- [API Docs](/apidocs/theindex.html)
 - [Repo](https://github.com/moigagoo/karkas)
 
 
