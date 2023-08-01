@@ -1,23 +1,23 @@
 nimTitle	styles	karkas/styles.html	module src/karkas/styles		0
-nim	leftToRight	karkas/styles.html#leftToRight	HDirection.leftToRight		6
-nim	rightToLeft	karkas/styles.html#rightToLeft	HDirection.rightToLeft		6
-nim	HDirection	karkas/styles.html#HDirection	enum HDirection		6
-nim	topToBottom	karkas/styles.html#topToBottom	VDirection.topToBottom		8
-nim	bottomToTop	karkas/styles.html#bottomToTop	VDirection.bottomToTop		8
-nim	VDirection	karkas/styles.html#VDirection	enum VDirection		8
-nim	top	karkas/styles.html#top	VPosition.top		10
-nim	center	karkas/styles.html#center	VPosition.center		10
-nim	bottom	karkas/styles.html#bottom	VPosition.bottom		10
-nim	VPosition	karkas/styles.html#VPosition	enum VPosition		10
-nim	left	karkas/styles.html#left	HPosition.left		12
-nim	center	karkas/styles.html#center_2	HPosition.center		12
-nim	right	karkas/styles.html#right	HPosition.right		12
-nim	HPosition	karkas/styles.html#HPosition	enum HPosition		12
-nim	box	karkas/styles.html#box,int	proc box(size = 0): VStyle		16
-nim	hStack	karkas/styles.html#hStack	proc hStack(direction = HDirection.leftToRight): VStyle		22
-nim	vStack	karkas/styles.html#vStack	proc vStack(direction = VDirection.topToBottom): VStyle		36
-nim	topPanel	karkas/styles.html#topPanel	proc topPanel(): VStyle		50
-nim	bottomPanel	karkas/styles.html#bottomPanel	proc bottomPanel(): VStyle		56
-nim	sticky	karkas/styles.html#sticky	proc sticky(): VStyle		62
-nim	vBar	karkas/styles.html#vBar	proc vBar(): VStyle		68
-nim	fBox	karkas/styles.html#fBox	proc fBox(vPosition = VPosition.top; hPosition = HPosition.right): VStyle		74
+nim	leftToRight	karkas/styles.html#leftToRight	HDirection.leftToRight		10
+nim	rightToLeft	karkas/styles.html#rightToLeft	HDirection.rightToLeft		10
+nim	HDirection	karkas/styles.html#HDirection	enum HDirection		10
+nim	topToBottom	karkas/styles.html#topToBottom	VDirection.topToBottom		12
+nim	bottomToTop	karkas/styles.html#bottomToTop	VDirection.bottomToTop		12
+nim	VDirection	karkas/styles.html#VDirection	enum VDirection		12
+nim	top	karkas/styles.html#top	VPosition.top		14
+nim	center	karkas/styles.html#center	VPosition.center		14
+nim	bottom	karkas/styles.html#bottom	VPosition.bottom		14
+nim	VPosition	karkas/styles.html#VPosition	enum VPosition		14
+nim	left	karkas/styles.html#left	HPosition.left		16
+nim	center	karkas/styles.html#center_2	HPosition.center		16
+nim	right	karkas/styles.html#right	HPosition.right		16
+nim	HPosition	karkas/styles.html#HPosition	enum HPosition		16
+nim	box	karkas/styles.html#box,int	proc box(size = 0): VStyle		20
+nim	hStack	karkas/styles.html#hStack	proc hStack(direction = HDirection.leftToRight): VStyle		26
+nim	vStack	karkas/styles.html#vStack	proc vStack(direction = VDirection.topToBottom): VStyle		40
+nim	topPanel	karkas/styles.html#topPanel	proc topPanel(): VStyle		54
+nim	bottomPanel	karkas/styles.html#bottomPanel	proc bottomPanel(): VStyle		60
+nim	sticky	karkas/styles.html#sticky	proc sticky(): VStyle		66
+nim	vBar	karkas/styles.html#vBar	proc vBar(): VStyle		72
+nim	fBox	karkas/styles.html#fBox	proc fBox(vPosition = VPosition.top; hPosition = HPosition.right): VStyle		78
