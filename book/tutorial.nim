@@ -179,7 +179,18 @@ Let's put our boxes into a stacks and play with the way they fit inside them.
     ```
 """
 
-nbImage(url="img/tutorial_3.png")
+nbKaraxCode:
+  import karax/vstyles
+  import karkas/styles
+
+  karaxHtml:
+    tdiv(style = {border: "solid gray 1px", padding: "10px"}):
+      h1: text "index"
+      tdiv(style = hStack()):
+        tdiv(style = box().merge(style {border: kstring"solid"})):
+          p: text "Box one" 
+        tdiv(style = box().merge(style {border: kstring"solid"})):
+          p: text "Box two" 
 
 nbText: """
 2. By default, a box takes as little space inside the stack as possible. To control how much space a box “wants” to have, set its `size` param:
@@ -207,7 +218,18 @@ nbText: """
     ```
 """
 
-nbImage(url="img/tutorial_4.png")
+nbKaraxCode:
+  import karax/vstyles
+  import karkas/styles
+
+  karaxHtml:
+    tdiv(style = {border: "solid gray 1px", padding: "10px"}):
+      h1: text "index"
+      tdiv(style = hStack()):
+        tdiv(style = box(size = 1).merge(style {border: kstring"solid"})):
+          p: text "Box one" 
+        tdiv(style = box(size = 2).merge(style {border: kstring"solid"})):
+          p: text "Box two" 
 
 nbText: """
 # Sugar
@@ -244,7 +266,22 @@ proc render*(context: Context): VNode =
       tdiv(style = box(size = 2) <- {border: "solid"}):
         p: text "Box two" 
 ```
+
+The result is the same but the code is now much more approachable.
 """
+
+nbKaraxCode:
+  import karax/vstyles
+  import karkas/styles
+
+  karaxHtml:
+    tdiv(style = {border: "solid gray 1px", padding: "10px"}):
+      h1: text "index"
+      tdiv(style = hStack()):
+        tdiv(style = box(size = 1) <- {border: "solid"}):
+          p: text "Box one" 
+        tdiv(style = box(size = 2) <- {border: "solid"}):
+          p: text "Box two" 
 
 nbSave
 
