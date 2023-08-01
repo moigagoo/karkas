@@ -98,7 +98,6 @@ Let's create a couple boxes to get familiar with them.
 """
 
 nbKaraxCode:
-  import karax/vstyles
   import karkas/styles
 
   karaxHtml:
@@ -113,7 +112,7 @@ nbText: """
 4. Let's make the boxes visible bye adding borders around them by mixing in custom styles:
 
     ```nim
-    import karax/[karaxdsl, kdom, vdom, kbase, vstyles]
+    import karax/[karaxdsl, kdom, vdom, kbase]
     import kraut/context
     import karkas/styles
 
@@ -136,7 +135,6 @@ nbText: """
 """
 
 nbKaraxCode:
-  import karax/vstyles
   import karkas/styles
 
   karaxHtml:
@@ -157,7 +155,7 @@ Let's put our boxes into a stacks and play with the way they fit inside them.
 1. Add a new `tdiv` with style `hStack`:
 
     ```nim
-    import karax/[karaxdsl, kdom, vdom, kbase, vstyles]
+    import karax/[karaxdsl, kdom, vdom, kbase]
     import kraut/context
     import karkas/styles
 
@@ -180,7 +178,6 @@ Let's put our boxes into a stacks and play with the way they fit inside them.
 """
 
 nbKaraxCode:
-  import karax/vstyles
   import karkas/styles
 
   karaxHtml:
@@ -196,7 +193,7 @@ nbText: """
 2. By default, a box takes as little space inside the stack as possible. To control how much space a box “wants” to have, set its `size` param:
 
     ```nim
-    import karax/[karaxdsl, kdom, vdom, kbase, vstyles]
+    import karax/[karaxdsl, kdom, vdom, kbase]
     import kraut/context
     import karkas/styles
 
@@ -219,7 +216,6 @@ nbText: """
 """
 
 nbKaraxCode:
-  import karax/vstyles
   import karkas/styles
 
   karaxHtml:
@@ -243,12 +239,10 @@ To merge styles, we'll use `<-` func. It has several useful properties compared 
 
 Also, you don't hae to import `karax/vstyles` or `karax/kbase` if you import `karkas/sugar`.
 
-As a result, the code becomes more readable:
-
 ```nim
 import karax/[karaxdsl, kdom, vdom]
 import kraut/context
-import karkas/[styles, sugar]
+import karkas
 
 import ../pages
 import ../state
@@ -269,19 +263,6 @@ proc render*(context: Context): VNode =
 
 The result is the same but the code is now much more approachable.
 """
-
-nbKaraxCode:
-  import karax/vstyles
-  import karkas/styles
-
-  karaxHtml:
-    tdiv(style = {border: "solid gray 1px", padding: "10px"}):
-      h1: text "index"
-      tdiv(style = hStack()):
-        tdiv(style = box(size = 1) <- {border: "solid"}):
-          p: text "Box one" 
-        tdiv(style = box(size = 2) <- {border: "solid"}):
-          p: text "Box two" 
 
 nbSave
 

@@ -30,7 +30,6 @@ task book, "Generate book":
 
 after book:
   cpFile("CNAME", "docs/CNAME")
-  cpDir("book/img", "docs/img")
 
 before docs:
   rmDir "docs/apidocs"

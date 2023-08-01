@@ -1,6 +1,6 @@
 import karax/[karaxdsl, kdom, vdom]
 import kraut/context
-import karkas/[styles, sugar]
+import karkas
 
 import ../pages
 import ../state
