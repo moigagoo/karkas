@@ -1,5 +1,5 @@
 import karkas/[styles, sugar]
 
 
-export style, sugar
+export styles, sugar
 
