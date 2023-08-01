@@ -9,11 +9,10 @@
 *.idx
 htmldocs
 docs
+nbook
 
 nimcache/
 testresults/
 outputExpected.txt
 outputGotten.txt
-
-nbook
 

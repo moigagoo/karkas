@@ -25,8 +25,8 @@ before book:
   exec "nimble setupBook"
 
 task book, "Generate book":
-  exec "nbook".findExe & " --mm:orc --deepcopy:on update"
-  exec "nbook".findExe & " --mm:orc --deepcopy:on build"
+  exec "./nbook".toExe & " --mm:orc --deepcopy:on update"
+  exec "./nbook".toExe & " --mm:orc --deepcopy:on build"
 
 after book:
   cpDir("book/img", "docs/img")
