@@ -97,7 +97,17 @@ Let's create a couple boxes to get familiar with them.
 3. You should see this in your browser:
 """
 
-nbImage(url="img/tutorial_1.png")
+nbKaraxCode:
+  import karax/vstyles
+  import karkas/styles
+
+  karaxHtml:
+    tdiv(style = {border: "solid gray 1px", padding: "10px"}):
+      h1: text "index"
+      tdiv(style = box()):
+        p: text "Box one" 
+      tdiv(style = box()):
+        p: text "Box two" 
 
 nbText: """
 4. Let's make the boxes visible bye adding borders around them by mixing in custom styles:
@@ -125,7 +135,17 @@ nbText: """
     ```
 """
 
-nbImage(url="img/tutorial_2.png")
+nbKaraxCode:
+  import karax/vstyles
+  import karkas/styles
+
+  karaxHtml:
+    tdiv(style = {border: "solid gray 1px", padding: "10px"}):
+      h1: text "index"
+      tdiv(style = box().merge(style {border: kstring"solid"})):
+        p: text "Box one" 
+      tdiv(style = box().merge(style {border: kstring"solid"})):
+        p: text "Box two" 
 
 nbText: """
 # Stacks
