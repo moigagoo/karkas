@@ -94,7 +94,9 @@ Let's create a couple boxes to get familiar with them.
     $ sauer make
     ```
 
-3. You should see this in your browser:
+    **Do it every time you change the code to apply the changes.**
+
+3. You should see this in your browser at [http://localhost:1337/app.html#/](http://localhost:1337/app.html#/):
 """
 
 nbKaraxCode:
@@ -102,7 +104,6 @@ nbKaraxCode:
 
   karaxHtml:
     tdiv(style = {border: "solid gray 1px", padding: "10px"}):
-      h1: text "index"
       tdiv(style = box()):
         p: text "Box one" 
       tdiv(style = box()):
@@ -139,7 +140,6 @@ nbKaraxCode:
 
   karaxHtml:
     tdiv(style = {border: "solid gray 1px", padding: "10px"}):
-      h1: text "index"
       tdiv(style = box().merge(style {border: kstring"solid"})):
         p: text "Box one" 
       tdiv(style = box().merge(style {border: kstring"solid"})):
@@ -182,7 +182,6 @@ nbKaraxCode:
 
   karaxHtml:
     tdiv(style = {border: "solid gray 1px", padding: "10px"}):
-      h1: text "index"
       tdiv(style = hStack()):
         tdiv(style = box().merge(style {border: kstring"solid"})):
           p: text "Box one" 
@@ -220,7 +219,6 @@ nbKaraxCode:
 
   karaxHtml:
     tdiv(style = {border: "solid gray 1px", padding: "10px"}):
-      h1: text "index"
       tdiv(style = hStack()):
         tdiv(style = box(size = 1).merge(style {border: kstring"solid"})):
           p: text "Box one" 
@@ -268,7 +266,13 @@ The result is the same but the code is now much more approachable.
 
 Building web forms is one of basic tasks in web development. Let's build a form with Karkas by combining stacks and putting the form elements in boxes.
 
-1. In `index.nim`, add:
+1. Create a new page in the tutorial app by running this command inside `tutorial` folder:
+
+    ```shell
+    $ sauer pages new forms -d
+    ```
+
+2. Open `src/tutorial/pages/forms.nim` in your favorite editor. It should look like this:
 
     ```nim
     tdiv(style = hStack() <- {width: "300px", padding: "10px"}):
@@ -302,7 +306,7 @@ Building web forms is one of basic tasks in web development. Let's build a form 
 
         tdiv(style = hStack() <- {margin: "10px"}):
           tdiv(style = box(1)):
-            input(`type` = k"radio", id = k"white", name = k"color")
+            input(`type` = k"radio", id = k"white", name = k"color", checked = true)
             label(`for` = k"white"):
               text k"White"
           tdiv(style = box(1)):
@@ -314,6 +318,8 @@ Building web forms is one of basic tasks in web development. Let's build a form 
             label(`for` = k"red"):
               text k"Red"
     ```
+
+3. Open [http://localhost:1337/app.html#/forms](http://localhost:1337/app.html#/forms) in your browser. You should see something like this:
 """
 
 nbKaraxCode:
