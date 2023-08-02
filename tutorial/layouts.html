@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using nimibook -->
         <meta charset="UTF-8">
-        <title>Forms - Karkas</title>
+        <title>Layouts - Karkas</title>
 
         <!-- Custom HTML head -->
 
@@ -101,11 +101,11 @@
                     <strong aria-hidden="true">2.1.</strong> Basics
                   </a></li>
                 <li class="chapter-item expanded ">
-                  <a href="../tutorial/forms.html" class="active" tabindex="0">
+                  <a href="../tutorial/forms.html" tabindex="0">
                     <strong aria-hidden="true">2.2.</strong> Forms
                   </a></li>
                 <li class="chapter-item expanded ">
-                  <a href="../tutorial/layouts.html" tabindex="0">
+                  <a href="../tutorial/layouts.html" class="active" tabindex="0">
                     <strong aria-hidden="true">2.3.</strong> Layouts
                   </a></li>
                   </ol>
@@ -163,72 +163,75 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1>Forms</h1>
-<p>Building web forms is one of basic tasks in web development. Let's build a form with Karkas by combining stacks and putting the form elements in boxes.</p>
+                        <h1>Layouts</h1>
+<p>In the closing part of the tutorial, we'll create a layout to be used on all pages of the tutorial app. We'll build it as a separate module that is imported by individual pages.</p>
+<p>The layout will consist of a top navigation panel and the content block underneath it. The navigation panel will have basic logic preventing the user from going to the page they're already on.</p>
 <ol>
 <li>
-<p>Create a new page in the tutorial app by running this command inside <code>tutorial</code> folder:</p>
-<pre><code class="language-shell">$ sauer pages new forms --default
-</code></pre>
-</li>
-<li>
-<p>Open <code>src/tutorial/pages/forms.nim</code> in your favorite editor and edit its content:</p>
+<p>In the tutorial app folder, in <code>src/tutorial</code>, create a file called <code>layout.nim</code> with the following content:</p>
 <pre><code class="language-nim">import karax/[karaxdsl, kdom, vdom]
-import kraut/context
 import karkas
 
-import ../pages
-import ../state
+import pages
+import state
 
-proc render*(context: Context): VNode =
-  currentPage = Page.forms
-  document.title = &quot;forms&quot;
-
-  buildHtml(tdiv):
-    h1: text &quot;forms&quot;
-
-    tdiv(style = {width: &quot;500px&quot;}):
-      tdiv(style = vStack())
+proc render*(body: VNode): VNode =
+  buildHtml:
+    tdiv:
+      for node in body:
+        node
 </code></pre>
-<p>Our form is a vertical stack of fields, empty so far. This is why we're using <code>vStack()</code> style.</p>
-<p><strong>Note:</strong> The outer fixed width <code>div</code> is there just to prevent the form from taking the entire page.</p>
 </li>
 <li>
-<p>Now let's add a couple of inputs to the form:</p>
+<p>Now, do two things in <code>src/tutorial/pages/index.nim</code>, <code>src/tutorial/pages/forms.nim</code>, and <code>src/tutorial/pages/notfound.nim</code>:</p>
+<ul>
+<li>Add <code>import ../layout</code> under <code>import ../state</code>.</li>
+<li>Replace <code>buildHtml(tdiv)</code> with <code>layout.render buildHtml(tdiv) do</code>.</li>
+</ul>
+<p>For example, <code>src/tutorial/pages/index.nim</code> should look like this:</p>
+<pre><code class="language-nim"> import karax/[karaxdsl, kdom, vdom]
+ import kraut/context
+ import karkas
+
+ import ../pages
+ import ../state
+ import ../layout
+
+ proc render*(context: Context): VNode =
+   currentPage = Page.index
+   document.title = &quot;index&quot;
+
+   layout.render buildHtml(tdiv) do:
+     h1: text &quot;index&quot;
+     tdiv(style = hStack()):
+       tdiv(style = box(size = 1) &lt;- {border: &quot;solid&quot;}):
+         p: text &quot;Box one&quot; 
+       tdiv(style = box(size = 2) &lt;- {border: &quot;solid&quot;}):
+         p: text &quot;Box two&quot; 
+</code></pre>
+</li>
+<li>
+<p>Rebuild the app with <code>sauer make</code>, open it in your browser, and make sure that nothing changed. Except that now, we have factored out common logic to a shared module, which we can now edit and thus affect all pages at once.</p>
+</li>
+<li>
+<p>Open <code>src/tutorial/layout.nim</code> in your favorite editor and update the code:</p>
 <pre><code class="language-nim">import karax/[karaxdsl, kdom, vdom]
-import kraut/context
 import karkas
 
-import ../pages
-import ../state
+import pages
+import state
 
-proc render*(context: Context): VNode =
-  currentPage = Page.forms
-  document.title = &quot;forms&quot;
-
-  buildHtml(tdiv):
-    h1: text &quot;forms&quot;
-
-    tdiv(style = {width: &quot;500px&quot;}):
-      tdiv(style = vStack()):
-        tdiv(style = hStack(direction = rightToLeft) &lt;- {margin: &quot;10px&quot;}):
-          tdiv(style = box(2)):
-            input(name = k&quot;first_name&quot;, style = {width: k&quot;100%&quot;})
-          tdiv(style = box(1)):
-            label(`for` = k&quot;first_name&quot;):
-              text k&quot;First name:&quot;
-        tdiv(style = hStack(direction = rightToLeft) &lt;- {margin: &quot;10px&quot;}):
-          tdiv(style = box(2)):
-            input(name = k&quot;last_name&quot;, style = {width: k&quot;100%&quot;})
-          tdiv(style = box(1)):
-            label(`for` = k&quot;last_name&quot;):
-              text k&quot;Last name:&quot;
+proc render*(body: VNode): VNode =
+  buildHtml:
+    tdiv(style = vStack()):
+      tdiv(style = topPanel() &lt;- hStack() &lt;- {padding: &quot;10px&quot;, boxShadow: &quot;0 0 10px&quot;})
+      tdiv:
+        for node in body:
+          node
 </code></pre>
-<p>Each field is a horizontal stack of an input and its label.</p>
-<p>Note that we set <code>direction</code> param in <code>hStack</code> to <code>rightToLeft</code>. This makes it more natural to code our fields: instead of “label-input,” we describe a field as “input-label.”</p>
-</li>
-<li>
-<p>Build the app with <code>sauer make</code> and open <a href="http://localhost:1337/app.html#/forms">http://localhost:1337/app.html#/forms</a> in your browser. You should see something like this:</p>
+<p>We've set up basic structure for our layout: a vertical stack with a panel at the top and a content block at the bottom.</p>
+<p>Note how we describe the top panel. By composing <code>topPanel()</code> with <code>hStack()</code> and custom styles, we define a full-width horizontal stack container with padding and shadow.</p>
+<p>Rebuild the app with <code>sauer make</code> and check the new (now empty) panel:</p>
 </li>
 </ol>
                         <div id="karax-0"></div>
@@ -236,13 +239,11 @@ proc render*(context: Context): VNode =
 var framePtr = null;
 var excHandler = 0;
 var lastJSError = null;
-var NTI570425439 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
-var NTI570425412 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
-var NTI1325400360 = {size: 0, kind: 24, base: null, node: null, finalizer: null};
 var NTI1476395023 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI1476395048 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI1476395043 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI1476395038 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
+var NTI1476395069 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI1476395064 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI1476395059 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI1392508931 = {size: 0, kind: 14, base: null, node: null, finalizer: null};
@@ -1473,6 +1474,9 @@ NTI1476395059.node = NNI1476395059;
 var NNI1476395064 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI1392508931, name: "Field0", sons: null}, 
 {kind: 1, offset: "Field1", len: 0, typ: NTI33554450, name: "Field1", sons: null}]};
 NTI1476395064.node = NNI1476395064;
+var NNI1476395069 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI1392508931, name: "Field0", sons: null}, 
+{kind: 1, offset: "Field1", len: 0, typ: NTI33554450, name: "Field1", sons: null}]};
+NTI1476395069.node = NNI1476395069;
 var NNI1476395038 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI1392508931, name: "Field0", sons: null}, 
 {kind: 1, offset: "Field1", len: 0, typ: NTI33554450, name: "Field1", sons: null}]};
 NTI1476395038.node = NNI1476395038;
@@ -1485,13 +1489,6 @@ NTI1476395048.node = NNI1476395048;
 var NNI1476395023 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI1392508931, name: "Field0", sons: null}, 
 {kind: 1, offset: "Field1", len: 0, typ: NTI33554450, name: "Field1", sons: null}]};
 NTI1476395023.node = NNI1476395023;
-NTI1325400360.base = NTI33554450;
-var NNI570425412 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI1392508931, name: "Field0", sons: null}, 
-{kind: 1, offset: "Field1", len: 0, typ: NTI33554450, name: "Field1", sons: null}]};
-NTI570425412.node = NNI570425412;
-var NNI570425439 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI1392508931, name: "Field0", sons: null}, 
-{kind: 1, offset: "Field1", len: 0, typ: NTI33554450, name: "Field1", sons: null}]};
-NTI570425439.node = NNI570425439;
 
 function setConstr() {
         var result = {};
@@ -2019,13 +2016,13 @@ function addChars_301990090(result_301990092, result_301990092_Idx, x_301990093,
          else {result_301990092[result_301990092_Idx].length = Temporary1; };
     Label2: {
       var iHEX60gensym4_301990110 = 0;
-      var i_570425553 = 0;
+      var i_570425566 = 0;
       Label3: {
           Label4: while (true) {
-          if (!(i_570425553 < n_301990095)) break Label4;
-            iHEX60gensym4_301990110 = i_570425553;
+          if (!(i_570425566 < n_301990095)) break Label4;
+            iHEX60gensym4_301990110 = i_570425566;
             result_301990092[result_301990092_Idx][(old_301990096 + iHEX60gensym4_301990110)] = x_301990093.charCodeAt((start_301990094 + iHEX60gensym4_301990110));
-            i_570425553 += 1;
+            i_570425566 += 1;
           }
       };
     };
@@ -2096,19 +2093,19 @@ function HEX3DHEX3D_738199685(x_738199687, y_738199688) {
     
     Label1: {
       var i_738199711 = 0;
-      var colontmp__570425556 = 0;
-      colontmp__570425556 = ((x_738199687).length - 1);
-      var res_570425557 = 0;
+      var colontmp__570425569 = 0;
+      colontmp__570425569 = ((x_738199687).length - 1);
+      var res_570425570 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(res_570425557 <= colontmp__570425556)) break Label3;
-            i_738199711 = res_570425557;
+          if (!(res_570425570 <= colontmp__570425569)) break Label3;
+            i_738199711 = res_570425570;
             if (!(HEX3DHEX3D_738199668(x_738199687[i_738199711], y_738199688[i_738199711]))) {
             result_738199689 = false;
             break BeforeRet;
             }
             
-            res_570425557 += 1;
+            res_570425570 += 1;
           }
       };
     };
@@ -2424,20 +2421,20 @@ function HEX3DHEX3D_738199668(a_738199669, b_738199670) {
         Label13: {
           var key_738200144 = [];
           var val_738200145 = null;
-          var colontmp__570425541 = ({data: [], counter: 0, first: 0, last: 0});
+          var colontmp__570425554 = ({data: [], counter: 0, first: 0, last: 0});
           var Temporary14 = a_738199669;
           if (ConstSet14[Temporary14.kind]===undefined) { raiseFieldError2(makeNimstrLit("field \'fields\' is not accessible for type \'JsonNodeObj\' using \'kind = "), reprDiscriminant(Temporary14.kind, NTI738197507)); }
-          colontmp__570425541 = nimCopy(colontmp__570425541, Temporary14.fields, NTI738197518);
-          var L_570425543 = len_738199756(colontmp__570425541);
-          if ((0 < colontmp__570425541.counter)) {
-          var h_570425544 = colontmp__570425541.first;
+          colontmp__570425554 = nimCopy(colontmp__570425554, Temporary14.fields, NTI738197518);
+          var L_570425556 = len_738199756(colontmp__570425554);
+          if ((0 < colontmp__570425554.counter)) {
+          var h_570425557 = colontmp__570425554.first;
           Label15: {
               Label16: while (true) {
-              if (!(0 <= h_570425544)) break Label16;
-                var nxt_570425546 = colontmp__570425541.data[h_570425544].Field1;
-                if (isFilled_838860831(colontmp__570425541.data[h_570425544].Field0)) {
-                key_738200144 = colontmp__570425541.data[h_570425544].Field2;
-                val_738200145 = colontmp__570425541.data[h_570425544].Field3;
+              if (!(0 <= h_570425557)) break Label16;
+                var nxt_570425559 = colontmp__570425554.data[h_570425557].Field1;
+                if (isFilled_838860831(colontmp__570425554.data[h_570425557].Field0)) {
+                key_738200144 = colontmp__570425554.data[h_570425557].Field2;
+                val_738200145 = colontmp__570425554.data[h_570425557].Field3;
                   var Temporary17 = b_738199670;
                   if (ConstSet15[Temporary17.kind]===undefined) { raiseFieldError2(makeNimstrLit("field \'fields\' is not accessible for type \'JsonNodeObj\' using \'kind = "), reprDiscriminant(Temporary17.kind, NTI738197507)); }
                 if (!(hasKey_738200186(Temporary17.fields, key_738200144))) {
@@ -2454,7 +2451,7 @@ function HEX3DHEX3D_738199668(a_738199669, b_738199670) {
                 
                 }
                 
-                h_570425544 = nxt_570425546;
+                h_570425557 = nxt_570425559;
               }
           };
           }
@@ -2968,12 +2965,12 @@ function collectionToString_738203123(x_738203125, prefix_738203126, separator_7
     var firstElement_738203130 = true;
     Label1: {
       var value_738203152 = 0;
-      var i_570425574 = 0;
+      var i_570425587 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425574 <= 6)) break Label3;
-            if ((x_738203125[i_570425574] != undefined)) {
-            value_738203152 = i_570425574;
+          if (!(i_570425587 <= 6)) break Label3;
+            if ((x_738203125[i_570425587] != undefined)) {
+            value_738203152 = i_570425587;
             if (firstElement_738203130) {
             firstElement_738203130 = false;
             }
@@ -2984,7 +2981,7 @@ function collectionToString_738203123(x_738203125, prefix_738203126, separator_7
             addQuoted_738203156(result_738203129, 0, value_738203152);
             }
             
-            i_570425574 += 1;
+            i_570425587 += 1;
           }
       };
     };
@@ -3367,15 +3364,15 @@ function convertObject_738202986(x_738202987) {
       result_738202988 = newJArray_738197682();
       Label1: {
         var i_738202994 = 0;
-        var colontmp__570425577 = 0;
-        colontmp__570425577 = len_738202983(x_738202987);
-        var i_570425578 = 0;
+        var colontmp__570425590 = 0;
+        colontmp__570425590 = len_738202983(x_738202987);
+        var i_570425591 = 0;
         Label2: {
             Label3: while (true) {
-            if (!(i_570425578 < colontmp__570425577)) break Label3;
-              i_738202994 = i_570425578;
+            if (!(i_570425591 < colontmp__570425590)) break Label3;
+              i_738202994 = i_570425591;
               add_738197804(result_738202988, convertObject_738202986(x_738202987[i_738202994]));
-              i_570425578 += 1;
+              i_570425591 += 1;
             }
         };
       };
@@ -3594,15 +3591,15 @@ function applyEvents_1291845911(n_1291845912) {
     var dest_1291845913 = n_1291845912.dom;
     Label1: {
       var i_1291845921 = 0;
-      var colontmp__570425604 = 0;
-      colontmp__570425604 = (n_1291845912.events).length;
-      var i_570425605 = 0;
+      var colontmp__570425617 = 0;
+      colontmp__570425617 = (n_1291845912.events).length;
+      var i_570425618 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425605 < colontmp__570425604)) break Label3;
-            i_1291845921 = i_570425605;
+          if (!(i_570425618 < colontmp__570425617)) break Label3;
+            i_1291845921 = i_570425618;
             n_1291845912.events[i_1291845921]["Field2"] = wrapEvent_1291845790(dest_1291845913, n_1291845912, n_1291845912.events[i_1291845921]["Field0"], n_1291845912.events[i_1291845921]["Field1"]);
-            i_570425605 += 1;
+            i_570425618 += 1;
           }
       };
     };
@@ -3614,15 +3611,15 @@ function applyStyle_1392509436(n_1392509437, s_1392509438) {
     n_1392509437.style = {};
     Label1: {
       var i_1392509451 = 0;
-      var colontmp__570425608 = 0;
-      colontmp__570425608 = (s_1392509438.length - 1);
-      var res_570425609 = 0;
+      var colontmp__570425621 = 0;
+      colontmp__570425621 = (s_1392509438.length - 1);
+      var res_570425622 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(res_570425609 <= colontmp__570425608)) break Label3;
-            i_1392509451 = res_570425609;
+          if (!(res_570425622 <= colontmp__570425621)) break Label3;
+            i_1392509451 = res_570425622;
             n_1392509437.style[s_1392509438[i_1392509451]] = s_1392509438[(i_1392509451 + 1)];
-            res_570425609 += 2;
+            res_570425622 += 2;
           }
       };
     };
@@ -3715,17 +3712,17 @@ function toDom_1291845938(n_1291845939, useAttachedNode_1291845940, kxi_12918459
       Label1: {
         var k_1291846045 = null;
         Label2: {
-          var i_570425589 = 0;
-          var colontmp__570425590 = 0;
-          colontmp__570425590 = (n_1291845939.kids).length;
-          var i_570425591 = 0;
+          var i_570425602 = 0;
+          var colontmp__570425603 = 0;
+          colontmp__570425603 = (n_1291845939.kids).length;
+          var i_570425604 = 0;
           Label3: {
               Label4: while (true) {
-              if (!(i_570425591 < colontmp__570425590)) break Label4;
-                i_570425589 = i_570425591;
-                k_1291846045 = n_1291845939.kids[i_570425589];
+              if (!(i_570425604 < colontmp__570425603)) break Label4;
+                i_570425602 = i_570425604;
+                k_1291846045 = n_1291845939.kids[i_570425602];
                 result_1291845942.appendChild(toDom_1291845938(k_1291846045, useAttachedNode_1291845940, kxi_1291845941));
-                i_570425591 += 1;
+                i_570425604 += 1;
               }
           };
         };
@@ -3748,21 +3745,21 @@ function toDom_1291845938(n_1291845939, useAttachedNode_1291845940, kxi_12918459
       var k_1291846046 = null;
       var v_1291846047 = null;
       Label6: {
-        var i_570425599 = 0;
-        var colontmp__570425600 = 0;
-        colontmp__570425600 = ((n_1291845939.attrs).length - 2);
-        var res_570425601 = 0;
+        var i_570425612 = 0;
+        var colontmp__570425613 = 0;
+        colontmp__570425613 = ((n_1291845939.attrs).length - 2);
+        var res_570425614 = 0;
         Label7: {
             Label8: while (true) {
-            if (!(res_570425601 <= colontmp__570425600)) break Label8;
-              i_570425599 = res_570425601;
-              k_1291846046 = n_1291845939.attrs[i_570425599];
-              v_1291846047 = n_1291845939.attrs[(i_570425599 + 1)];
+            if (!(res_570425614 <= colontmp__570425613)) break Label8;
+              i_570425612 = res_570425614;
+              k_1291846046 = n_1291845939.attrs[i_570425612];
+              v_1291846047 = n_1291845939.attrs[(i_570425612 + 1)];
               if (!((v_1291846047 == null))) {
               result_1291845942.setAttribute(k_1291846046, v_1291846047);
               }
               
-              res_570425601 += 2;
+              res_570425614 += 2;
             }
         };
       };
@@ -3840,19 +3837,19 @@ function same_1291846099(n_1291846100, e_1291846101, nesting_1291846102) {
     
     Label1: {
       var i_1291846139 = 0;
-      var colontmp__570425612 = 0;
-      colontmp__570425612 = len_1325400847(n_1291846100);
-      var i_570425613 = 0;
+      var colontmp__570425625 = 0;
+      colontmp__570425625 = len_1325400847(n_1291846100);
+      var i_570425626 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425613 < colontmp__570425612)) break Label3;
-            i_1291846139 = i_570425613;
+          if (!(i_570425626 < colontmp__570425625)) break Label3;
+            i_1291846139 = i_570425626;
             if (!(same_1291846099(HEX5BHEX5D_1325400854(n_1291846100, i_1291846139), e_1291846101.childNodes[i_1291846139], (nesting_1291846102 + 1)))) {
             result_1291846103 = false;
             break BeforeRet;
             }
             
-            i_570425613 += 1;
+            i_570425626 += 1;
           }
       };
     };
@@ -3914,19 +3911,19 @@ function eq_1392509186(a_1392509187, b_1392509188) {
     
     Label1: {
       var i_1392509224 = 0;
-      var colontmp__570425639 = 0;
-      colontmp__570425639 = a_1392509187.length;
-      var i_570425640 = 0;
+      var colontmp__570425652 = 0;
+      colontmp__570425652 = a_1392509187.length;
+      var i_570425653 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425640 < colontmp__570425639)) break Label3;
-            i_1392509224 = i_570425640;
+          if (!(i_570425653 < colontmp__570425652)) break Label3;
+            i_1392509224 = i_570425653;
             if (!((a_1392509187[i_1392509224] == b_1392509188[i_1392509224]))) {
             result_1392509189 = false;
             break BeforeRet;
             }
             
-            i_570425640 += 1;
+            i_570425653 += 1;
           }
       };
     };
@@ -3955,19 +3952,19 @@ function sameAttrs_1325401027(a_1325401028, b_1325401029) {
     result_1325401030 = true;
     Label1: {
       var i_1325401044 = 0;
-      var colontmp__570425643 = 0;
-      colontmp__570425643 = (a_1325401028.attrs).length;
-      var i_570425644 = 0;
+      var colontmp__570425656 = 0;
+      colontmp__570425656 = (a_1325401028.attrs).length;
+      var i_570425657 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425644 < colontmp__570425643)) break Label3;
-            i_1325401044 = i_570425644;
+          if (!(i_570425657 < colontmp__570425656)) break Label3;
+            i_1325401044 = i_570425657;
             if (!((a_1325401028.attrs[i_1325401044] == b_1325401029.attrs[i_1325401044]))) {
             result_1325401030 = false;
             break BeforeRet;
             }
             
-            i_570425644 += 1;
+            i_570425657 += 1;
           }
       };
     };
@@ -4020,19 +4017,19 @@ function eq_1291846153(a_1291846154, b_1291846155, recursive_1291846156) {
     
     Label1: {
       var i_1291846174 = 0;
-      var colontmp__570425631 = 0;
-      colontmp__570425631 = len_1325400847(a_1291846154);
-      var i_570425632 = 0;
+      var colontmp__570425644 = 0;
+      colontmp__570425644 = len_1325400847(a_1291846154);
+      var i_570425645 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425632 < colontmp__570425631)) break Label3;
-            i_1291846174 = i_570425632;
+          if (!(i_570425645 < colontmp__570425644)) break Label3;
+            i_1291846174 = i_570425645;
             if ((eq_1291846153(HEX5BHEX5D_1325400854(a_1291846154, i_1291846174), HEX5BHEX5D_1325400854(b_1291846155, i_1291846174), recursive_1291846156) == 1)) {
             result_1291846157 = 1;
             break BeforeRet;
             }
             
-            i_570425632 += 1;
+            i_570425645 += 1;
           }
       };
     };
@@ -4086,19 +4083,19 @@ function eq_1291846153(a_1291846154, b_1291846155, recursive_1291846156) {
     
     Label4: {
       var i_1291846200 = 0;
-      var colontmp__570425635 = 0;
-      colontmp__570425635 = len_1325400847(a_1291846154);
-      var i_570425636 = 0;
+      var colontmp__570425648 = 0;
+      colontmp__570425648 = len_1325400847(a_1291846154);
+      var i_570425649 = 0;
       Label5: {
           Label6: while (true) {
-          if (!(i_570425636 < colontmp__570425635)) break Label6;
-            i_1291846200 = i_570425636;
+          if (!(i_570425649 < colontmp__570425648)) break Label6;
+            i_1291846200 = i_570425649;
             if (!((eq_1291846153(HEX5BHEX5D_1325400854(a_1291846154, i_1291846200), HEX5BHEX5D_1325400854(b_1291846155, i_1291846200), true) == 3))) {
             result_1291846157 = 1;
             break BeforeRet;
             }
             
-            i_570425636 += 1;
+            i_570425649 += 1;
           }
       };
     };
@@ -4142,18 +4139,18 @@ function updateAttributes_1291846631(newNode_1291846632, oldNode_1291846633) {
       var k_1291846638 = null;
       var __1291846639 = null;
       Label2: {
-        var i_570425648 = 0;
-        var colontmp__570425649 = 0;
-        colontmp__570425649 = ((oldNode_1291846633.attrs).length - 2);
-        var res_570425650 = 0;
+        var i_570425661 = 0;
+        var colontmp__570425662 = 0;
+        colontmp__570425662 = ((oldNode_1291846633.attrs).length - 2);
+        var res_570425663 = 0;
         Label3: {
             Label4: while (true) {
-            if (!(res_570425650 <= colontmp__570425649)) break Label4;
-              i_570425648 = res_570425650;
-              k_1291846638 = oldNode_1291846633.attrs[i_570425648];
-              __1291846639 = oldNode_1291846633.attrs[(i_570425648 + 1)];
+            if (!(res_570425663 <= colontmp__570425662)) break Label4;
+              i_570425661 = res_570425663;
+              k_1291846638 = oldNode_1291846633.attrs[i_570425661];
+              __1291846639 = oldNode_1291846633.attrs[(i_570425661 + 1)];
               oldNode_1291846633.dom.removeAttribute(k_1291846638);
-              res_570425650 += 2;
+              res_570425663 += 2;
             }
         };
       };
@@ -4162,21 +4159,21 @@ function updateAttributes_1291846631(newNode_1291846632, oldNode_1291846633) {
       var k_1291846640 = null;
       var v_1291846641 = null;
       Label6: {
-        var i_570425654 = 0;
-        var colontmp__570425655 = 0;
-        colontmp__570425655 = ((newNode_1291846632.attrs).length - 2);
-        var res_570425656 = 0;
+        var i_570425667 = 0;
+        var colontmp__570425668 = 0;
+        colontmp__570425668 = ((newNode_1291846632.attrs).length - 2);
+        var res_570425669 = 0;
         Label7: {
             Label8: while (true) {
-            if (!(res_570425656 <= colontmp__570425655)) break Label8;
-              i_570425654 = res_570425656;
-              k_1291846640 = newNode_1291846632.attrs[i_570425654];
-              v_1291846641 = newNode_1291846632.attrs[(i_570425654 + 1)];
+            if (!(res_570425669 <= colontmp__570425668)) break Label8;
+              i_570425667 = res_570425669;
+              k_1291846640 = newNode_1291846632.attrs[i_570425667];
+              v_1291846641 = newNode_1291846632.attrs[(i_570425667 + 1)];
               if (!((v_1291846641 == null))) {
               oldNode_1291846633.dom.setAttribute(k_1291846640, v_1291846641);
               }
               
-              res_570425656 += 2;
+              res_570425669 += 2;
             }
         };
       };
@@ -4194,19 +4191,19 @@ function getAttr_1325400826(n_1325400827, key_1325400828) {
   BeforeRet: {
     Label1: {
       var i_1325400838 = 0;
-      var colontmp__570425659 = 0;
-      colontmp__570425659 = ((n_1325400827.attrs).length - 2);
-      var res_570425660 = 0;
+      var colontmp__570425672 = 0;
+      colontmp__570425672 = ((n_1325400827.attrs).length - 2);
+      var res_570425673 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(res_570425660 <= colontmp__570425659)) break Label3;
-            i_1325400838 = res_570425660;
+          if (!(res_570425673 <= colontmp__570425672)) break Label3;
+            i_1325400838 = res_570425673;
             if ((n_1325400827.attrs[i_1325400838] == key_1325400828)) {
             result_1325400829 = n_1325400827.attrs[(i_1325400838 + 1)];
             break BeforeRet;
             }
             
-            res_570425660 += 2;
+            res_570425673 += 2;
           }
       };
     };
@@ -4220,15 +4217,15 @@ function removeAllEventHandlers_1291845748(d_1291845749) {
     if (!((d_1291845749.karaxEvents == null))) {
     Label1: {
       var i_1291845765 = 0;
-      var colontmp__570425663 = 0;
-      colontmp__570425663 = d_1291845749.karaxEvents.length;
-      var i_570425664 = 0;
+      var colontmp__570425676 = 0;
+      colontmp__570425676 = d_1291845749.karaxEvents.length;
+      var i_570425677 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425664 < colontmp__570425663)) break Label3;
-            i_1291845765 = i_570425664;
+          if (!(i_570425677 < colontmp__570425676)) break Label3;
+            i_1291845765 = i_570425677;
             d_1291845749.removeEventListener(d_1291845749.karaxEvents[i_1291845765]["Field0"], d_1291845749.karaxEvents[i_1291845765]["Field1"]);
-            i_570425664 += 1;
+            i_570425677 += 1;
           }
       };
     };
@@ -4347,28 +4344,28 @@ function diff_1291846811(newNode_1291846812, oldNode_1291846813, parent_12918468
       var pos_1291846877 = (nimMin(oldPos_1291846861, newPos_1291846862) + 1);
       Label6: {
         var i_1291846882 = 0;
-        var colontmp__570425618 = 0;
-        colontmp__570425618 = (pos_1291846877 - 1);
-        var res_570425619 = commonPrefix_1291846851;
+        var colontmp__570425631 = 0;
+        colontmp__570425631 = (pos_1291846877 - 1);
+        var res_570425632 = commonPrefix_1291846851;
         Label7: {
             Label8: while (true) {
-            if (!(res_570425619 <= colontmp__570425618)) break Label8;
-              i_1291846882 = res_570425619;
+            if (!(res_570425632 <= colontmp__570425631)) break Label8;
+              i_1291846882 = res_570425632;
               diff_1291846811(HEX5BHEX5D_1325400854(newNode_1291846812, i_1291846882), HEX5BHEX5D_1325400854(oldNode_1291846813, i_1291846882), current_1291846815, HEX5BHEX5D_1325400854(oldNode_1291846813, i_1291846882).dom, kxi_1291846816);
-              res_570425619 += 1;
+              res_570425632 += 1;
             }
         };
       };
       if (((oldPos_1291846861 + 1) == oldLength_1291846842)) {
       Label9: {
         var i_1291846887 = 0;
-        var res_570425622 = pos_1291846877;
+        var res_570425635 = pos_1291846877;
         Label10: {
             Label11: while (true) {
-            if (!(res_570425622 <= newPos_1291846862)) break Label11;
-              i_1291846887 = res_570425622;
+            if (!(res_570425635 <= newPos_1291846862)) break Label11;
+              i_1291846887 = res_570425635;
               addPatch_1291846651(kxi_1291846816, 2, current_1291846815, null, HEX5BHEX5D_1325400854(newNode_1291846812, i_1291846887), null);
-              res_570425622 += 1;
+              res_570425635 += 1;
             }
         };
       };
@@ -4377,13 +4374,13 @@ function diff_1291846811(newNode_1291846812, oldNode_1291846813, parent_12918468
         var before_1291846888 = current_1291846815.childNodes[(oldPos_1291846861 + 1)];
         Label12: {
           var i_1291846893 = 0;
-          var res_570425625 = pos_1291846877;
+          var res_570425638 = pos_1291846877;
           Label13: {
               Label14: while (true) {
-              if (!(res_570425625 <= newPos_1291846862)) break Label14;
-                i_1291846893 = res_570425625;
+              if (!(res_570425638 <= newPos_1291846862)) break Label14;
+                i_1291846893 = res_570425638;
                 addPatch_1291846651(kxi_1291846816, 3, current_1291846815, before_1291846888, HEX5BHEX5D_1325400854(newNode_1291846812, i_1291846893), null);
-                res_570425625 += 1;
+                res_570425638 += 1;
               }
           };
         };
@@ -4391,14 +4388,14 @@ function diff_1291846811(newNode_1291846812, oldNode_1291846813, parent_12918468
       
       Label15: {
         var i_1291846898 = 0;
-        var res_570425628 = pos_1291846877;
+        var res_570425641 = pos_1291846877;
         Label16: {
             Label17: while (true) {
-            if (!(res_570425628 <= oldPos_1291846861)) break Label17;
-              i_1291846898 = res_570425628;
+            if (!(res_570425641 <= oldPos_1291846861)) break Label17;
+              i_1291846898 = res_570425641;
               addPatch_1291846651(kxi__nimib_kxi_3, 4, null, null, null, HEX5BHEX5D_1325400854(oldNode_1291846813, i_1291846898));
               addPatch_1291846651(kxi_1291846816, 1, current_1291846815, current_1291846815.childNodes[i_1291846898], null, null);
-              res_570425628 += 1;
+              res_570425641 += 1;
             }
         };
       };
@@ -4461,15 +4458,15 @@ function moveDom_1291846745(dest_1291846746, src_1291846747) {
     
     Label1: {
       var i_1291846761 = 0;
-      var colontmp__570425674 = 0;
-      colontmp__570425674 = len_1325400847(dest_1291846746);
-      var i_570425675 = 0;
+      var colontmp__570425687 = 0;
+      colontmp__570425687 = len_1325400847(dest_1291846746);
+      var i_570425688 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425675 < colontmp__570425674)) break Label3;
-            i_1291846761 = i_570425675;
+          if (!(i_570425688 < colontmp__570425687)) break Label3;
+            i_1291846761 = i_570425688;
             moveDom_1291846745(HEX5BHEX5D_1325400854(dest_1291846746, i_1291846761), HEX5BHEX5D_1325400854(src_1291846747, i_1291846761));
-            i_570425675 += 1;
+            i_570425688 += 1;
           }
       };
     };
@@ -4486,11 +4483,11 @@ function HEX5BHEX5DHEX3D_1325400858(x_1325400859, idx_1325400860, y_1325400861) 
 function applyPatch_1291846762(kxi_1291846763) {
     Label1: {
       var i_1291846768 = 0;
-      var i_570425668 = 0;
+      var i_570425681 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425668 < kxi_1291846763.patchLen)) break Label3;
-            i_1291846768 = i_570425668;
+          if (!(i_570425681 < kxi_1291846763.patchLen)) break Label3;
+            i_1291846768 = i_570425681;
             var p_1291846769 = nimCopy(null, kxi_1291846763.patches[i_1291846768], NTI1291845638);
             switch (p_1291846769.k) {
             case 0:
@@ -4543,21 +4540,21 @@ function applyPatch_1291846762(kxi_1291846763) {
               
               break;
             }
-            i_570425668 += 1;
+            i_570425681 += 1;
           }
       };
     };
     kxi_1291846763.patchLen = 0;
     Label4: {
       var i_1291846800 = 0;
-      var i_570425671 = 0;
+      var i_570425684 = 0;
       Label5: {
           Label6: while (true) {
-          if (!(i_570425671 < kxi_1291846763.patchLenV)) break Label6;
-            i_1291846800 = i_570425671;
+          if (!(i_570425684 < kxi_1291846763.patchLenV)) break Label6;
+            i_1291846800 = i_570425684;
             var p_1291846801 = nimCopy(null, kxi_1291846763.patchesV[i_1291846800], NTI1291845639);
             HEX5BHEX5DHEX3D_1325400858(p_1291846801.parent, p_1291846801.pos, p_1291846801.newChild);
-            i_570425671 += 1;
+            i_570425684 += 1;
           }
       };
     };
@@ -4727,13 +4724,13 @@ function tree_1325400926(kind_1325400927, kids_1325400928) {
     result_1325400929 = newVNode_1325400923(kind_1325400927);
     Label1: {
       var k_1325400942 = null;
-      var i_570425679 = 0;
+      var i_570425692 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425679 < (kids_1325400928).length)) break Label3;
-            k_1325400942 = kids_1325400928[i_570425679];
+          if (!(i_570425692 < (kids_1325400928).length)) break Label3;
+            k_1325400942 = kids_1325400928[i_570425692];
             add_1325400862(result_1325400929, k_1325400942);
-            i_570425679 += 1;
+            i_570425692 += 1;
           }
       };
     };
@@ -4759,18 +4756,18 @@ function setAttr_1392509240(s_1392509241, a_1392509242, value_1392509243) {
           s_1392509241.push("");
           Label3: {
             var j_1392509285 = 0;
-            var colontmp__570425687 = 0;
-            var colontmp__570425688 = 0;
-            colontmp__570425687 = (s_1392509241.length - 1);
-            colontmp__570425688 = (i_1392509244 + 3);
-            var res_570425690 = colontmp__570425687;
+            var colontmp__570425706 = 0;
+            var colontmp__570425707 = 0;
+            colontmp__570425706 = (s_1392509241.length - 1);
+            colontmp__570425707 = (i_1392509244 + 3);
+            var res_570425709 = colontmp__570425706;
             Label4: {
                 Label5: while (true) {
-                if (!(colontmp__570425688 <= res_570425690)) break Label5;
-                  j_1392509285 = res_570425690;
+                if (!(colontmp__570425707 <= res_570425709)) break Label5;
+                  j_1392509285 = res_570425709;
                   s_1392509241[j_1392509285] = s_1392509241[(j_1392509285 - 2)];
                   s_1392509241[(j_1392509285 - 1)] = s_1392509241[(j_1392509285 - 3)];
-                  res_570425690 -= 2;
+                  res_570425709 -= 2;
                 }
             };
           };
@@ -4801,13 +4798,13 @@ function style_1392509364(pairs_1392509365) {
     result_1392509366 = new Array(0);
     Label1: {
       var x_1392509383 = {Field0: 0, Field1: null};
-      var i_570425683 = 0;
+      var i_570425702 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425683 < (pairs_1392509365).length)) break Label3;
-            x_1392509383 = pairs_1392509365[i_570425683];
+          if (!(i_570425702 < (pairs_1392509365).length)) break Label3;
+            x_1392509383 = pairs_1392509365[i_570425702];
             setAttr_1392509327(result_1392509366, x_1392509383["Field0"], x_1392509383["Field1"]);
-            i_570425683 += 1;
+            i_570425702 += 1;
           }
       };
     };
@@ -4831,29 +4828,29 @@ function merge_1392509460(a_1392509461, b_1392509462) {
     result_1392509463 = new Array(0);
     Label1: {
       var i_1392509478 = 0;
-      var colontmp__570425693 = 0;
-      colontmp__570425693 = a_1392509461.length;
-      var i_570425694 = 0;
+      var colontmp__570425712 = 0;
+      colontmp__570425712 = a_1392509461.length;
+      var i_570425713 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425694 < colontmp__570425693)) break Label3;
-            i_1392509478 = i_570425694;
+          if (!(i_570425713 < colontmp__570425712)) break Label3;
+            i_1392509478 = i_570425713;
             result_1392509463.push(a_1392509461[i_1392509478]);
-            i_570425694 += 1;
+            i_570425713 += 1;
           }
       };
     };
     Label4: {
       var i_1392509499 = 0;
-      var colontmp__570425697 = 0;
-      colontmp__570425697 = (b_1392509462.length - 1);
-      var res_570425698 = 0;
+      var colontmp__570425716 = 0;
+      colontmp__570425716 = (b_1392509462.length - 1);
+      var res_570425717 = 0;
       Label5: {
           Label6: while (true) {
-          if (!(res_570425698 <= colontmp__570425697)) break Label6;
-            i_1392509499 = res_570425698;
+          if (!(res_570425717 <= colontmp__570425716)) break Label6;
+            i_1392509499 = res_570425717;
             setAttr_1392509240(result_1392509463, b_1392509462[i_1392509499], b_1392509462[(i_1392509499 + 1)]);
-            res_570425698 += 2;
+            res_570425717 += 2;
           }
       };
     };
@@ -4908,20 +4905,29 @@ function HEX3CHEX2D_1493172239(a_1493172240, b_1493172241) {
     Label1: {
       var key_1493172257 = 0;
       var val_1493172258 = [];
-      var i_570425702 = 0;
+      var i_570425721 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425702 < (b_1493172241).length)) break Label3;
-            key_1493172257 = b_1493172241[i_570425702]["Field0"];
-            val_1493172258 = b_1493172241[i_570425702]["Field1"];
+          if (!(i_570425721 < (b_1493172241).length)) break Label3;
+            key_1493172257 = b_1493172241[i_570425721]["Field0"];
+            val_1493172258 = b_1493172241[i_570425721]["Field1"];
             kb_1493172243.push({Field0: key_1493172257, Field1: k_1493172228(val_1493172258)});;
-            i_570425702 += 1;
+            i_570425721 += 1;
           }
       };
     };
     result_1493172242 = HEX3CHEX2D_1493172235(a_1493172240, kb_1493172243);
 
   return result_1493172242;
+
+}
+
+function topPanel_1476395066() {
+  var result_1476395067 = null;
+
+    result_1476395067 = style_1392509364([nimCopy(null, {Field0: 171, Field1: k_1493172228([48])}, NTI1476395069), nimCopy(null, {Field0: 185, Field1: k_1493172228([49,48,48,37])}, NTI1476395069)]);
+
+  return result_1476395067;
 
 }
 
@@ -4946,6 +4952,49 @@ function hStack_1476395056(direction_1476395057) {
 
 }
 
+function layout_570425391(body_570425392) {
+  var result_570425393 = null;
+
+    var tmp_570425424 = tree_1325400926(44, []);
+    tmp_570425424.style = vStack_1476395061(0);
+    var tmp_570425430 = tree_1325400926(44, []);
+    tmp_570425430.style = HEX3CHEX2D_1493172239(HEX3CHEX2D_1493172231(topPanel_1476395066(), hStack_1476395056(0)), [{Field0: 135, Field1: [49,48,112,120]}, {Field0: 57, Field1: [48,32,48,32,49,48,112,120]}]);
+    add_1325400862(tmp_570425424, tmp_570425430);
+    var tmp_570425431 = tree_1325400926(44, []);
+    Label1: {
+      var node_570425432 = null;
+      Label2: {
+        var i_570425696 = 0;
+        var colontmp__570425697 = 0;
+        colontmp__570425697 = (body_570425392.kids).length;
+        var i_570425698 = 0;
+        Label3: {
+            Label4: while (true) {
+            if (!(i_570425698 < colontmp__570425697)) break Label4;
+              i_570425696 = i_570425698;
+              node_570425432 = body_570425392.kids[i_570425696];
+              add_1325400862(tmp_570425431, node_570425432);
+              i_570425698 += 1;
+            }
+        };
+      };
+    };
+    add_1325400862(tmp_570425424, tmp_570425431);
+    result_570425393 = tmp_570425424;
+
+  return result_570425393;
+
+}
+
+function text_1325400994(s_1325400995) {
+  var result_1325400996 = null;
+
+    result_1325400996 = {kind: 0, text: toJSStr(s_1325400995), index: (-1), m_type: NTI1325400174, id: null, class: null, kids: [], attrs: [], events: [], style: null, styleVersion: 0, dom: null};
+
+  return result_1325400996;
+
+}
+
 function box_1476395037(size_1476395038) {
   var result_1476395039 = null;
 
@@ -4955,165 +5004,84 @@ function box_1476395037(size_1476395038) {
 
 }
 
-function setAttr_1325400777(n_1325400778, key_1325400779, val_1325400780) {
-  BeforeRet: {
-    if (((n_1325400778.attrs).length == 0)) {
-    n_1325400778.attrs = nimCopy(null, [key_1325400779, val_1325400780], NTI1325400360);
-    }
-    else {
-      Label1: {
-        var i_1325400797 = 0;
-        var colontmp__570425705 = 0;
-        colontmp__570425705 = ((n_1325400778.attrs).length - 2);
-        var res_570425706 = 0;
-        Label2: {
-            Label3: while (true) {
-            if (!(res_570425706 <= colontmp__570425705)) break Label3;
-              i_1325400797 = res_570425706;
-              if ((n_1325400778.attrs[i_1325400797] == key_1325400779)) {
-              n_1325400778.attrs[(i_1325400797 + 1)] = val_1325400780;
-              break BeforeRet;
-              }
-              
-              res_570425706 += 2;
-            }
-        };
-      };
-      n_1325400778.attrs.push(key_1325400779);;
-      n_1325400778.attrs.push(val_1325400780);;
-    }
-    
-  };
+function createDom_570425496() {
+  var result_570425497 = null;
 
-  
-}
+    var tmp_570425498 = tree_1325400926(44, []);
+    var tmp_570425499 = tree_1325400926(44, []);
+    var tmp_570425500 = tree_1325400926(21, []);
+    add_1325400862(tmp_570425500, text_1325400994([105,110,100,101,120]));
+    add_1325400862(tmp_570425499, tmp_570425500);
+    var tmp_570425501 = tree_1325400926(44, []);
+    tmp_570425501.style = hStack_1476395056(0);
+    var tmp_570425502 = tree_1325400926(44, []);
+    tmp_570425502.style = HEX3CHEX2D_1493172239(box_1476395037(1), [{Field0: 22, Field1: [115,111,108,105,100]}]);
+    var tmp_570425503 = tree_1325400926(32, []);
+    add_1325400862(tmp_570425503, text_1325400994([66,111,120,32,111,110,101]));
+    add_1325400862(tmp_570425502, tmp_570425503);
+    add_1325400862(tmp_570425501, tmp_570425502);
+    var tmp_570425504 = tree_1325400926(44, []);
+    tmp_570425504.style = HEX3CHEX2D_1493172239(box_1476395037(2), [{Field0: 22, Field1: [115,111,108,105,100]}]);
+    var tmp_570425505 = tree_1325400926(32, []);
+    add_1325400862(tmp_570425505, text_1325400994([66,111,120,32,116,119,111]));
+    add_1325400862(tmp_570425504, tmp_570425505);
+    add_1325400862(tmp_570425501, tmp_570425504);
+    add_1325400862(tmp_570425499, tmp_570425501);
+    add_1325400862(tmp_570425498, layout_570425391(tmp_570425499));
+    result_570425497 = tmp_570425498;
 
-function text_1325400997(s_1325400998) {
-  var result_1325400999 = null;
-
-    result_1325400999 = {kind: 0, text: s_1325400998, index: (-1), m_type: NTI1325400174, id: null, class: null, kids: [], attrs: [], events: [], style: null, styleVersion: 0, dom: null};
-
-  return result_1325400999;
-
-}
-
-function createDom_570425391() {
-  var result_570425392 = null;
-
-    var tmp_570425423 = tree_1325400926(44, []);
-    var tmp_570425424 = tree_1325400926(44, []);
-    tmp_570425424.style = vStack_1476395061(0);
-    var tmp_570425430 = tree_1325400926(44, []);
-    tmp_570425430.style = HEX3CHEX2D_1493172239(hStack_1476395056(1), [{Field0: 110, Field1: [49,48,112,120]}]);
-    var tmp_570425431 = tree_1325400926(44, []);
-    tmp_570425431.style = box_1476395037(2);
-    var tmp_570425432 = tree_1325400926(194, []);
-    setAttr_1325400777(tmp_570425432, "name", k_1493172228([102,105,114,115,116,95,110,97,109,101]));
-    tmp_570425432.style = style_1392509364([nimCopy(null, {Field0: 185, Field1: k_1493172228([49,48,48,37])}, NTI570425412)]);
-    add_1325400862(tmp_570425431, tmp_570425432);
-    add_1325400862(tmp_570425430, tmp_570425431);
-    var tmp_570425439 = tree_1325400926(44, []);
-    tmp_570425439.style = box_1476395037(1);
-    var tmp_570425440 = tree_1325400926(193, []);
-    setAttr_1325400777(tmp_570425440, "for", k_1493172228([102,105,114,115,116,95,110,97,109,101]));
-    add_1325400862(tmp_570425440, text_1325400997(k_1493172228([70,105,114,115,116,32,110,97,109,101,58])));
-    add_1325400862(tmp_570425439, tmp_570425440);
-    add_1325400862(tmp_570425430, tmp_570425439);
-    add_1325400862(tmp_570425424, tmp_570425430);
-    var tmp_570425441 = tree_1325400926(44, []);
-    tmp_570425441.style = HEX3CHEX2D_1493172239(hStack_1476395056(1), [{Field0: 110, Field1: [49,48,112,120]}]);
-    var tmp_570425442 = tree_1325400926(44, []);
-    tmp_570425442.style = box_1476395037(2);
-    var tmp_570425443 = tree_1325400926(194, []);
-    setAttr_1325400777(tmp_570425443, "name", k_1493172228([108,97,115,116,95,110,97,109,101]));
-    tmp_570425443.style = style_1392509364([nimCopy(null, {Field0: 185, Field1: k_1493172228([49,48,48,37])}, NTI570425439)]);
-    add_1325400862(tmp_570425442, tmp_570425443);
-    add_1325400862(tmp_570425441, tmp_570425442);
-    var tmp_570425444 = tree_1325400926(44, []);
-    tmp_570425444.style = box_1476395037(1);
-    var tmp_570425445 = tree_1325400926(193, []);
-    setAttr_1325400777(tmp_570425445, "for", k_1493172228([108,97,115,116,95,110,97,109,101]));
-    add_1325400862(tmp_570425445, text_1325400997(k_1493172228([76,97,115,116,32,110,97,109,101,58])));
-    add_1325400862(tmp_570425444, tmp_570425445);
-    add_1325400862(tmp_570425441, tmp_570425444);
-    add_1325400862(tmp_570425424, tmp_570425441);
-    add_1325400862(tmp_570425423, tmp_570425424);
-    result_570425392 = tmp_570425423;
-
-  return result_570425392;
+  return result_570425497;
 
 }
 var rootId_570425376 = to_570425364(parseJson_738203014([34,107,97,114,97,120,45,48,34]));
 var postRenderCallback_570425385 = [null];
-setRenderer_1291847327(createDom_570425391, toJSStr(rootId_570425376), postRenderCallback_570425385[0]);
+setRenderer_1291847327(createDom_570425496, toJSStr(rootId_570425376), postRenderCallback_570425385[0]);
 </script>
                         <ol start="5">
 <li>
-<p>To complete the example, let's add another field with a textarea and three radio buttons:</p>
+<p>Now let's define a proc that generates a navigation entry and invoke it in the top panel. Based on the current page, it shows either a link to a page or just its name:</p>
 <pre><code class="language-nim">import karax/[karaxdsl, kdom, vdom]
-import kraut/context
 import karkas
 
-import ../pages
-import ../state
+import pages
+import state
 
-proc render*(context: Context): VNode =
-  currentPage = Page.forms
-  document.title = &quot;forms&quot;
+proc navEntry(page: Page, url, caption: string): VNode =
+  buildHtml:
+    tdiv(style = box() &lt;- {minWidth: &quot;50px&quot;}):
+      if state.currentPage != page:
+        a(href = k url):
+          text k caption
+      else:
+        text k caption
 
-  buildHtml(tdiv):
-    h1: text &quot;forms&quot;
-
-    tdiv(style = {width: &quot;500px&quot;}):
-      tdiv(style = vStack()):
-        tdiv(style = hStack(direction = rightToLeft) &lt;- {margin: &quot;10px&quot;}):
-          tdiv(style = box(2)):
-            input(name = k&quot;first_name&quot;, style = {width: k&quot;100%&quot;})
-          tdiv(style = box(1)):
-            label(`for` = k&quot;first_name&quot;):
-              text k&quot;First name:&quot;
-        tdiv(style = hStack(direction = rightToLeft) &lt;- {margin: &quot;10px&quot;}):
-          tdiv(style = box(2)):
-            input(name = k&quot;last_name&quot;, style = {width: k&quot;100%&quot;})
-          tdiv(style = box(1)):
-            label(`for` = k&quot;last_name&quot;):
-              text k&quot;Last name:&quot;
-        tdiv(style = hStack(direction = rightToLeft) &lt;- {margin: &quot;10px&quot;}):
-          tdiv(style = box(2)):
-            textarea(name = k&quot;about_me&quot;, style = {width: k&quot;100%&quot;})
-          tdiv(style = box(1)):
-            label(`for` = k&quot;about_me&quot;):
-              text k&quot;About me:&quot;
-        tdiv(style = hStack() &lt;- {margin: &quot;10px&quot;}):
-          tdiv(style = box(1)):
-            input(`type` = k&quot;radio&quot;, id = k&quot;white&quot;, name = k&quot;color&quot;, checked = true)
-            label(`for` = k&quot;white&quot;):
-              text k&quot;White&quot;
-          tdiv(style = box(1)):
-            input(`type` = k&quot;radio&quot;, id = k&quot;blue&quot;, name = k&quot;color&quot;)
-            label(`for` = k&quot;blue&quot;):
-              text k&quot;Blue&quot;
-          tdiv(style = box(1)):
-            input(`type` = k&quot;radio&quot;, id = k&quot;red&quot;, name = k&quot;color&quot;)
-            label(`for` = k&quot;red&quot;):
-              text k&quot;Red&quot;
+proc render*(body: VNode): VNode =
+  buildHtml:
+    tdiv(style = vStack()):
+      tdiv(style = topPanel() &lt;- hStack() &lt;- {padding: &quot;10px&quot;, boxShadow: &quot;0 0 10px&quot;}):
+        navEntry(index, &quot;#/&quot;, &quot;Index&quot;)
+        navEntry(forms, &quot;#/forms&quot;, &quot;Forms&quot;)
+      tdiv:
+        for node in body:
+          node
 </code></pre>
-<p>Rebuild the app with <code>sauer make</code> and refresh the browser page:</p>
 </li>
 </ol>
+<p>Rebuild the app with <code>sauer make</code> and see the complete app with navigation:</p>
                         <div id="karax-1"></div>
                         <script defer>/* Generated by the Nim Compiler v2.1.1 */
 var framePtr = null;
 var excHandler = 0;
 var lastJSError = null;
-var NTI570425465 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
-var NTI570425439 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
-var NTI570425413 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
+var NTI570425603 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
+var NTI570425577 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
+var NTI570425551 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI1325400360 = {size: 0, kind: 24, base: null, node: null, finalizer: null};
 var NTI1476395023 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI1476395048 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI1476395043 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI1476395038 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
+var NTI1476395069 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI1476395064 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI1476395059 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI1392508931 = {size: 0, kind: 14, base: null, node: null, finalizer: null};
@@ -6344,6 +6312,9 @@ NTI1476395059.node = NNI1476395059;
 var NNI1476395064 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI1392508931, name: "Field0", sons: null}, 
 {kind: 1, offset: "Field1", len: 0, typ: NTI33554450, name: "Field1", sons: null}]};
 NTI1476395064.node = NNI1476395064;
+var NNI1476395069 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI1392508931, name: "Field0", sons: null}, 
+{kind: 1, offset: "Field1", len: 0, typ: NTI33554450, name: "Field1", sons: null}]};
+NTI1476395069.node = NNI1476395069;
 var NNI1476395038 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI1392508931, name: "Field0", sons: null}, 
 {kind: 1, offset: "Field1", len: 0, typ: NTI33554450, name: "Field1", sons: null}]};
 NTI1476395038.node = NNI1476395038;
@@ -6357,15 +6328,15 @@ var NNI1476395023 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{
 {kind: 1, offset: "Field1", len: 0, typ: NTI33554450, name: "Field1", sons: null}]};
 NTI1476395023.node = NNI1476395023;
 NTI1325400360.base = NTI33554450;
-var NNI570425413 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI1392508931, name: "Field0", sons: null}, 
+var NNI570425551 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI1392508931, name: "Field0", sons: null}, 
 {kind: 1, offset: "Field1", len: 0, typ: NTI33554450, name: "Field1", sons: null}]};
-NTI570425413.node = NNI570425413;
-var NNI570425439 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI1392508931, name: "Field0", sons: null}, 
+NTI570425551.node = NNI570425551;
+var NNI570425577 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI1392508931, name: "Field0", sons: null}, 
 {kind: 1, offset: "Field1", len: 0, typ: NTI33554450, name: "Field1", sons: null}]};
-NTI570425439.node = NNI570425439;
-var NNI570425465 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI1392508931, name: "Field0", sons: null}, 
+NTI570425577.node = NNI570425577;
+var NNI570425603 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI1392508931, name: "Field0", sons: null}, 
 {kind: 1, offset: "Field1", len: 0, typ: NTI33554450, name: "Field1", sons: null}]};
-NTI570425465.node = NNI570425465;
+NTI570425603.node = NNI570425603;
 
 function setConstr() {
         var result = {};
@@ -6893,13 +6864,13 @@ function addChars_301990090(result_301990092, result_301990092_Idx, x_301990093,
          else {result_301990092[result_301990092_Idx].length = Temporary1; };
     Label2: {
       var iHEX60gensym4_301990110 = 0;
-      var i_570425569 = 0;
+      var i_570425657 = 0;
       Label3: {
           Label4: while (true) {
-          if (!(i_570425569 < n_301990095)) break Label4;
-            iHEX60gensym4_301990110 = i_570425569;
+          if (!(i_570425657 < n_301990095)) break Label4;
+            iHEX60gensym4_301990110 = i_570425657;
             result_301990092[result_301990092_Idx][(old_301990096 + iHEX60gensym4_301990110)] = x_301990093.charCodeAt((start_301990094 + iHEX60gensym4_301990110));
-            i_570425569 += 1;
+            i_570425657 += 1;
           }
       };
     };
@@ -6970,19 +6941,19 @@ function HEX3DHEX3D_738199685(x_738199687, y_738199688) {
     
     Label1: {
       var i_738199711 = 0;
-      var colontmp__570425572 = 0;
-      colontmp__570425572 = ((x_738199687).length - 1);
-      var res_570425573 = 0;
+      var colontmp__570425660 = 0;
+      colontmp__570425660 = ((x_738199687).length - 1);
+      var res_570425661 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(res_570425573 <= colontmp__570425572)) break Label3;
-            i_738199711 = res_570425573;
+          if (!(res_570425661 <= colontmp__570425660)) break Label3;
+            i_738199711 = res_570425661;
             if (!(HEX3DHEX3D_738199668(x_738199687[i_738199711], y_738199688[i_738199711]))) {
             result_738199689 = false;
             break BeforeRet;
             }
             
-            res_570425573 += 1;
+            res_570425661 += 1;
           }
       };
     };
@@ -7298,20 +7269,20 @@ function HEX3DHEX3D_738199668(a_738199669, b_738199670) {
         Label13: {
           var key_738200144 = [];
           var val_738200145 = null;
-          var colontmp__570425557 = ({data: [], counter: 0, first: 0, last: 0});
+          var colontmp__570425645 = ({data: [], counter: 0, first: 0, last: 0});
           var Temporary14 = a_738199669;
           if (ConstSet14[Temporary14.kind]===undefined) { raiseFieldError2(makeNimstrLit("field \'fields\' is not accessible for type \'JsonNodeObj\' using \'kind = "), reprDiscriminant(Temporary14.kind, NTI738197507)); }
-          colontmp__570425557 = nimCopy(colontmp__570425557, Temporary14.fields, NTI738197518);
-          var L_570425559 = len_738199756(colontmp__570425557);
-          if ((0 < colontmp__570425557.counter)) {
-          var h_570425560 = colontmp__570425557.first;
+          colontmp__570425645 = nimCopy(colontmp__570425645, Temporary14.fields, NTI738197518);
+          var L_570425647 = len_738199756(colontmp__570425645);
+          if ((0 < colontmp__570425645.counter)) {
+          var h_570425648 = colontmp__570425645.first;
           Label15: {
               Label16: while (true) {
-              if (!(0 <= h_570425560)) break Label16;
-                var nxt_570425562 = colontmp__570425557.data[h_570425560].Field1;
-                if (isFilled_838860831(colontmp__570425557.data[h_570425560].Field0)) {
-                key_738200144 = colontmp__570425557.data[h_570425560].Field2;
-                val_738200145 = colontmp__570425557.data[h_570425560].Field3;
+              if (!(0 <= h_570425648)) break Label16;
+                var nxt_570425650 = colontmp__570425645.data[h_570425648].Field1;
+                if (isFilled_838860831(colontmp__570425645.data[h_570425648].Field0)) {
+                key_738200144 = colontmp__570425645.data[h_570425648].Field2;
+                val_738200145 = colontmp__570425645.data[h_570425648].Field3;
                   var Temporary17 = b_738199670;
                   if (ConstSet15[Temporary17.kind]===undefined) { raiseFieldError2(makeNimstrLit("field \'fields\' is not accessible for type \'JsonNodeObj\' using \'kind = "), reprDiscriminant(Temporary17.kind, NTI738197507)); }
                 if (!(hasKey_738200186(Temporary17.fields, key_738200144))) {
@@ -7328,7 +7299,7 @@ function HEX3DHEX3D_738199668(a_738199669, b_738199670) {
                 
                 }
                 
-                h_570425560 = nxt_570425562;
+                h_570425648 = nxt_570425650;
               }
           };
           }
@@ -7842,12 +7813,12 @@ function collectionToString_738203123(x_738203125, prefix_738203126, separator_7
     var firstElement_738203130 = true;
     Label1: {
       var value_738203152 = 0;
-      var i_570425590 = 0;
+      var i_570425678 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425590 <= 6)) break Label3;
-            if ((x_738203125[i_570425590] != undefined)) {
-            value_738203152 = i_570425590;
+          if (!(i_570425678 <= 6)) break Label3;
+            if ((x_738203125[i_570425678] != undefined)) {
+            value_738203152 = i_570425678;
             if (firstElement_738203130) {
             firstElement_738203130 = false;
             }
@@ -7858,7 +7829,7 @@ function collectionToString_738203123(x_738203125, prefix_738203126, separator_7
             addQuoted_738203156(result_738203129, 0, value_738203152);
             }
             
-            i_570425590 += 1;
+            i_570425678 += 1;
           }
       };
     };
@@ -8241,15 +8212,15 @@ function convertObject_738202986(x_738202987) {
       result_738202988 = newJArray_738197682();
       Label1: {
         var i_738202994 = 0;
-        var colontmp__570425593 = 0;
-        colontmp__570425593 = len_738202983(x_738202987);
-        var i_570425594 = 0;
+        var colontmp__570425681 = 0;
+        colontmp__570425681 = len_738202983(x_738202987);
+        var i_570425682 = 0;
         Label2: {
             Label3: while (true) {
-            if (!(i_570425594 < colontmp__570425593)) break Label3;
-              i_738202994 = i_570425594;
+            if (!(i_570425682 < colontmp__570425681)) break Label3;
+              i_738202994 = i_570425682;
               add_738197804(result_738202988, convertObject_738202986(x_738202987[i_738202994]));
-              i_570425594 += 1;
+              i_570425682 += 1;
             }
         };
       };
@@ -8468,15 +8439,15 @@ function applyEvents_1291845911(n_1291845912) {
     var dest_1291845913 = n_1291845912.dom;
     Label1: {
       var i_1291845921 = 0;
-      var colontmp__570425620 = 0;
-      colontmp__570425620 = (n_1291845912.events).length;
-      var i_570425621 = 0;
+      var colontmp__570425708 = 0;
+      colontmp__570425708 = (n_1291845912.events).length;
+      var i_570425709 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425621 < colontmp__570425620)) break Label3;
-            i_1291845921 = i_570425621;
+          if (!(i_570425709 < colontmp__570425708)) break Label3;
+            i_1291845921 = i_570425709;
             n_1291845912.events[i_1291845921]["Field2"] = wrapEvent_1291845790(dest_1291845913, n_1291845912, n_1291845912.events[i_1291845921]["Field0"], n_1291845912.events[i_1291845921]["Field1"]);
-            i_570425621 += 1;
+            i_570425709 += 1;
           }
       };
     };
@@ -8488,15 +8459,15 @@ function applyStyle_1392509436(n_1392509437, s_1392509438) {
     n_1392509437.style = {};
     Label1: {
       var i_1392509451 = 0;
-      var colontmp__570425624 = 0;
-      colontmp__570425624 = (s_1392509438.length - 1);
-      var res_570425625 = 0;
+      var colontmp__570425712 = 0;
+      colontmp__570425712 = (s_1392509438.length - 1);
+      var res_570425713 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(res_570425625 <= colontmp__570425624)) break Label3;
-            i_1392509451 = res_570425625;
+          if (!(res_570425713 <= colontmp__570425712)) break Label3;
+            i_1392509451 = res_570425713;
             n_1392509437.style[s_1392509438[i_1392509451]] = s_1392509438[(i_1392509451 + 1)];
-            res_570425625 += 2;
+            res_570425713 += 2;
           }
       };
     };
@@ -8589,17 +8560,17 @@ function toDom_1291845938(n_1291845939, useAttachedNode_1291845940, kxi_12918459
       Label1: {
         var k_1291846045 = null;
         Label2: {
-          var i_570425605 = 0;
-          var colontmp__570425606 = 0;
-          colontmp__570425606 = (n_1291845939.kids).length;
-          var i_570425607 = 0;
+          var i_570425693 = 0;
+          var colontmp__570425694 = 0;
+          colontmp__570425694 = (n_1291845939.kids).length;
+          var i_570425695 = 0;
           Label3: {
               Label4: while (true) {
-              if (!(i_570425607 < colontmp__570425606)) break Label4;
-                i_570425605 = i_570425607;
-                k_1291846045 = n_1291845939.kids[i_570425605];
+              if (!(i_570425695 < colontmp__570425694)) break Label4;
+                i_570425693 = i_570425695;
+                k_1291846045 = n_1291845939.kids[i_570425693];
                 result_1291845942.appendChild(toDom_1291845938(k_1291846045, useAttachedNode_1291845940, kxi_1291845941));
-                i_570425607 += 1;
+                i_570425695 += 1;
               }
           };
         };
@@ -8622,21 +8593,21 @@ function toDom_1291845938(n_1291845939, useAttachedNode_1291845940, kxi_12918459
       var k_1291846046 = null;
       var v_1291846047 = null;
       Label6: {
-        var i_570425615 = 0;
-        var colontmp__570425616 = 0;
-        colontmp__570425616 = ((n_1291845939.attrs).length - 2);
-        var res_570425617 = 0;
+        var i_570425703 = 0;
+        var colontmp__570425704 = 0;
+        colontmp__570425704 = ((n_1291845939.attrs).length - 2);
+        var res_570425705 = 0;
         Label7: {
             Label8: while (true) {
-            if (!(res_570425617 <= colontmp__570425616)) break Label8;
-              i_570425615 = res_570425617;
-              k_1291846046 = n_1291845939.attrs[i_570425615];
-              v_1291846047 = n_1291845939.attrs[(i_570425615 + 1)];
+            if (!(res_570425705 <= colontmp__570425704)) break Label8;
+              i_570425703 = res_570425705;
+              k_1291846046 = n_1291845939.attrs[i_570425703];
+              v_1291846047 = n_1291845939.attrs[(i_570425703 + 1)];
               if (!((v_1291846047 == null))) {
               result_1291845942.setAttribute(k_1291846046, v_1291846047);
               }
               
-              res_570425617 += 2;
+              res_570425705 += 2;
             }
         };
       };
@@ -8714,19 +8685,19 @@ function same_1291846099(n_1291846100, e_1291846101, nesting_1291846102) {
     
     Label1: {
       var i_1291846139 = 0;
-      var colontmp__570425628 = 0;
-      colontmp__570425628 = len_1325400847(n_1291846100);
-      var i_570425629 = 0;
+      var colontmp__570425716 = 0;
+      colontmp__570425716 = len_1325400847(n_1291846100);
+      var i_570425717 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425629 < colontmp__570425628)) break Label3;
-            i_1291846139 = i_570425629;
+          if (!(i_570425717 < colontmp__570425716)) break Label3;
+            i_1291846139 = i_570425717;
             if (!(same_1291846099(HEX5BHEX5D_1325400854(n_1291846100, i_1291846139), e_1291846101.childNodes[i_1291846139], (nesting_1291846102 + 1)))) {
             result_1291846103 = false;
             break BeforeRet;
             }
             
-            i_570425629 += 1;
+            i_570425717 += 1;
           }
       };
     };
@@ -8788,19 +8759,19 @@ function eq_1392509186(a_1392509187, b_1392509188) {
     
     Label1: {
       var i_1392509224 = 0;
-      var colontmp__570425655 = 0;
-      colontmp__570425655 = a_1392509187.length;
-      var i_570425656 = 0;
+      var colontmp__570425743 = 0;
+      colontmp__570425743 = a_1392509187.length;
+      var i_570425744 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425656 < colontmp__570425655)) break Label3;
-            i_1392509224 = i_570425656;
+          if (!(i_570425744 < colontmp__570425743)) break Label3;
+            i_1392509224 = i_570425744;
             if (!((a_1392509187[i_1392509224] == b_1392509188[i_1392509224]))) {
             result_1392509189 = false;
             break BeforeRet;
             }
             
-            i_570425656 += 1;
+            i_570425744 += 1;
           }
       };
     };
@@ -8829,19 +8800,19 @@ function sameAttrs_1325401027(a_1325401028, b_1325401029) {
     result_1325401030 = true;
     Label1: {
       var i_1325401044 = 0;
-      var colontmp__570425659 = 0;
-      colontmp__570425659 = (a_1325401028.attrs).length;
-      var i_570425660 = 0;
+      var colontmp__570425747 = 0;
+      colontmp__570425747 = (a_1325401028.attrs).length;
+      var i_570425748 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425660 < colontmp__570425659)) break Label3;
-            i_1325401044 = i_570425660;
+          if (!(i_570425748 < colontmp__570425747)) break Label3;
+            i_1325401044 = i_570425748;
             if (!((a_1325401028.attrs[i_1325401044] == b_1325401029.attrs[i_1325401044]))) {
             result_1325401030 = false;
             break BeforeRet;
             }
             
-            i_570425660 += 1;
+            i_570425748 += 1;
           }
       };
     };
@@ -8894,19 +8865,19 @@ function eq_1291846153(a_1291846154, b_1291846155, recursive_1291846156) {
     
     Label1: {
       var i_1291846174 = 0;
-      var colontmp__570425647 = 0;
-      colontmp__570425647 = len_1325400847(a_1291846154);
-      var i_570425648 = 0;
+      var colontmp__570425735 = 0;
+      colontmp__570425735 = len_1325400847(a_1291846154);
+      var i_570425736 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425648 < colontmp__570425647)) break Label3;
-            i_1291846174 = i_570425648;
+          if (!(i_570425736 < colontmp__570425735)) break Label3;
+            i_1291846174 = i_570425736;
             if ((eq_1291846153(HEX5BHEX5D_1325400854(a_1291846154, i_1291846174), HEX5BHEX5D_1325400854(b_1291846155, i_1291846174), recursive_1291846156) == 1)) {
             result_1291846157 = 1;
             break BeforeRet;
             }
             
-            i_570425648 += 1;
+            i_570425736 += 1;
           }
       };
     };
@@ -8960,19 +8931,19 @@ function eq_1291846153(a_1291846154, b_1291846155, recursive_1291846156) {
     
     Label4: {
       var i_1291846200 = 0;
-      var colontmp__570425651 = 0;
-      colontmp__570425651 = len_1325400847(a_1291846154);
-      var i_570425652 = 0;
+      var colontmp__570425739 = 0;
+      colontmp__570425739 = len_1325400847(a_1291846154);
+      var i_570425740 = 0;
       Label5: {
           Label6: while (true) {
-          if (!(i_570425652 < colontmp__570425651)) break Label6;
-            i_1291846200 = i_570425652;
+          if (!(i_570425740 < colontmp__570425739)) break Label6;
+            i_1291846200 = i_570425740;
             if (!((eq_1291846153(HEX5BHEX5D_1325400854(a_1291846154, i_1291846200), HEX5BHEX5D_1325400854(b_1291846155, i_1291846200), true) == 3))) {
             result_1291846157 = 1;
             break BeforeRet;
             }
             
-            i_570425652 += 1;
+            i_570425740 += 1;
           }
       };
     };
@@ -9016,18 +8987,18 @@ function updateAttributes_1291846631(newNode_1291846632, oldNode_1291846633) {
       var k_1291846638 = null;
       var __1291846639 = null;
       Label2: {
-        var i_570425664 = 0;
-        var colontmp__570425665 = 0;
-        colontmp__570425665 = ((oldNode_1291846633.attrs).length - 2);
-        var res_570425666 = 0;
+        var i_570425752 = 0;
+        var colontmp__570425753 = 0;
+        colontmp__570425753 = ((oldNode_1291846633.attrs).length - 2);
+        var res_570425754 = 0;
         Label3: {
             Label4: while (true) {
-            if (!(res_570425666 <= colontmp__570425665)) break Label4;
-              i_570425664 = res_570425666;
-              k_1291846638 = oldNode_1291846633.attrs[i_570425664];
-              __1291846639 = oldNode_1291846633.attrs[(i_570425664 + 1)];
+            if (!(res_570425754 <= colontmp__570425753)) break Label4;
+              i_570425752 = res_570425754;
+              k_1291846638 = oldNode_1291846633.attrs[i_570425752];
+              __1291846639 = oldNode_1291846633.attrs[(i_570425752 + 1)];
               oldNode_1291846633.dom.removeAttribute(k_1291846638);
-              res_570425666 += 2;
+              res_570425754 += 2;
             }
         };
       };
@@ -9036,21 +9007,21 @@ function updateAttributes_1291846631(newNode_1291846632, oldNode_1291846633) {
       var k_1291846640 = null;
       var v_1291846641 = null;
       Label6: {
-        var i_570425670 = 0;
-        var colontmp__570425671 = 0;
-        colontmp__570425671 = ((newNode_1291846632.attrs).length - 2);
-        var res_570425672 = 0;
+        var i_570425758 = 0;
+        var colontmp__570425759 = 0;
+        colontmp__570425759 = ((newNode_1291846632.attrs).length - 2);
+        var res_570425760 = 0;
         Label7: {
             Label8: while (true) {
-            if (!(res_570425672 <= colontmp__570425671)) break Label8;
-              i_570425670 = res_570425672;
-              k_1291846640 = newNode_1291846632.attrs[i_570425670];
-              v_1291846641 = newNode_1291846632.attrs[(i_570425670 + 1)];
+            if (!(res_570425760 <= colontmp__570425759)) break Label8;
+              i_570425758 = res_570425760;
+              k_1291846640 = newNode_1291846632.attrs[i_570425758];
+              v_1291846641 = newNode_1291846632.attrs[(i_570425758 + 1)];
               if (!((v_1291846641 == null))) {
               oldNode_1291846633.dom.setAttribute(k_1291846640, v_1291846641);
               }
               
-              res_570425672 += 2;
+              res_570425760 += 2;
             }
         };
       };
@@ -9068,19 +9039,19 @@ function getAttr_1325400826(n_1325400827, key_1325400828) {
   BeforeRet: {
     Label1: {
       var i_1325400838 = 0;
-      var colontmp__570425675 = 0;
-      colontmp__570425675 = ((n_1325400827.attrs).length - 2);
-      var res_570425676 = 0;
+      var colontmp__570425763 = 0;
+      colontmp__570425763 = ((n_1325400827.attrs).length - 2);
+      var res_570425764 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(res_570425676 <= colontmp__570425675)) break Label3;
-            i_1325400838 = res_570425676;
+          if (!(res_570425764 <= colontmp__570425763)) break Label3;
+            i_1325400838 = res_570425764;
             if ((n_1325400827.attrs[i_1325400838] == key_1325400828)) {
             result_1325400829 = n_1325400827.attrs[(i_1325400838 + 1)];
             break BeforeRet;
             }
             
-            res_570425676 += 2;
+            res_570425764 += 2;
           }
       };
     };
@@ -9094,15 +9065,15 @@ function removeAllEventHandlers_1291845748(d_1291845749) {
     if (!((d_1291845749.karaxEvents == null))) {
     Label1: {
       var i_1291845765 = 0;
-      var colontmp__570425679 = 0;
-      colontmp__570425679 = d_1291845749.karaxEvents.length;
-      var i_570425680 = 0;
+      var colontmp__570425767 = 0;
+      colontmp__570425767 = d_1291845749.karaxEvents.length;
+      var i_570425768 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425680 < colontmp__570425679)) break Label3;
-            i_1291845765 = i_570425680;
+          if (!(i_570425768 < colontmp__570425767)) break Label3;
+            i_1291845765 = i_570425768;
             d_1291845749.removeEventListener(d_1291845749.karaxEvents[i_1291845765]["Field0"], d_1291845749.karaxEvents[i_1291845765]["Field1"]);
-            i_570425680 += 1;
+            i_570425768 += 1;
           }
       };
     };
@@ -9221,28 +9192,28 @@ function diff_1291846811(newNode_1291846812, oldNode_1291846813, parent_12918468
       var pos_1291846877 = (nimMin(oldPos_1291846861, newPos_1291846862) + 1);
       Label6: {
         var i_1291846882 = 0;
-        var colontmp__570425634 = 0;
-        colontmp__570425634 = (pos_1291846877 - 1);
-        var res_570425635 = commonPrefix_1291846851;
+        var colontmp__570425722 = 0;
+        colontmp__570425722 = (pos_1291846877 - 1);
+        var res_570425723 = commonPrefix_1291846851;
         Label7: {
             Label8: while (true) {
-            if (!(res_570425635 <= colontmp__570425634)) break Label8;
-              i_1291846882 = res_570425635;
+            if (!(res_570425723 <= colontmp__570425722)) break Label8;
+              i_1291846882 = res_570425723;
               diff_1291846811(HEX5BHEX5D_1325400854(newNode_1291846812, i_1291846882), HEX5BHEX5D_1325400854(oldNode_1291846813, i_1291846882), current_1291846815, HEX5BHEX5D_1325400854(oldNode_1291846813, i_1291846882).dom, kxi_1291846816);
-              res_570425635 += 1;
+              res_570425723 += 1;
             }
         };
       };
       if (((oldPos_1291846861 + 1) == oldLength_1291846842)) {
       Label9: {
         var i_1291846887 = 0;
-        var res_570425638 = pos_1291846877;
+        var res_570425726 = pos_1291846877;
         Label10: {
             Label11: while (true) {
-            if (!(res_570425638 <= newPos_1291846862)) break Label11;
-              i_1291846887 = res_570425638;
+            if (!(res_570425726 <= newPos_1291846862)) break Label11;
+              i_1291846887 = res_570425726;
               addPatch_1291846651(kxi_1291846816, 2, current_1291846815, null, HEX5BHEX5D_1325400854(newNode_1291846812, i_1291846887), null);
-              res_570425638 += 1;
+              res_570425726 += 1;
             }
         };
       };
@@ -9251,13 +9222,13 @@ function diff_1291846811(newNode_1291846812, oldNode_1291846813, parent_12918468
         var before_1291846888 = current_1291846815.childNodes[(oldPos_1291846861 + 1)];
         Label12: {
           var i_1291846893 = 0;
-          var res_570425641 = pos_1291846877;
+          var res_570425729 = pos_1291846877;
           Label13: {
               Label14: while (true) {
-              if (!(res_570425641 <= newPos_1291846862)) break Label14;
-                i_1291846893 = res_570425641;
+              if (!(res_570425729 <= newPos_1291846862)) break Label14;
+                i_1291846893 = res_570425729;
                 addPatch_1291846651(kxi_1291846816, 3, current_1291846815, before_1291846888, HEX5BHEX5D_1325400854(newNode_1291846812, i_1291846893), null);
-                res_570425641 += 1;
+                res_570425729 += 1;
               }
           };
         };
@@ -9265,14 +9236,14 @@ function diff_1291846811(newNode_1291846812, oldNode_1291846813, parent_12918468
       
       Label15: {
         var i_1291846898 = 0;
-        var res_570425644 = pos_1291846877;
+        var res_570425732 = pos_1291846877;
         Label16: {
             Label17: while (true) {
-            if (!(res_570425644 <= oldPos_1291846861)) break Label17;
-              i_1291846898 = res_570425644;
+            if (!(res_570425732 <= oldPos_1291846861)) break Label17;
+              i_1291846898 = res_570425732;
               addPatch_1291846651(kxi__nimib_kxi_5, 4, null, null, null, HEX5BHEX5D_1325400854(oldNode_1291846813, i_1291846898));
               addPatch_1291846651(kxi_1291846816, 1, current_1291846815, current_1291846815.childNodes[i_1291846898], null, null);
-              res_570425644 += 1;
+              res_570425732 += 1;
             }
         };
       };
@@ -9335,15 +9306,15 @@ function moveDom_1291846745(dest_1291846746, src_1291846747) {
     
     Label1: {
       var i_1291846761 = 0;
-      var colontmp__570425690 = 0;
-      colontmp__570425690 = len_1325400847(dest_1291846746);
-      var i_570425691 = 0;
+      var colontmp__570425778 = 0;
+      colontmp__570425778 = len_1325400847(dest_1291846746);
+      var i_570425779 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425691 < colontmp__570425690)) break Label3;
-            i_1291846761 = i_570425691;
+          if (!(i_570425779 < colontmp__570425778)) break Label3;
+            i_1291846761 = i_570425779;
             moveDom_1291846745(HEX5BHEX5D_1325400854(dest_1291846746, i_1291846761), HEX5BHEX5D_1325400854(src_1291846747, i_1291846761));
-            i_570425691 += 1;
+            i_570425779 += 1;
           }
       };
     };
@@ -9360,11 +9331,11 @@ function HEX5BHEX5DHEX3D_1325400858(x_1325400859, idx_1325400860, y_1325400861) 
 function applyPatch_1291846762(kxi_1291846763) {
     Label1: {
       var i_1291846768 = 0;
-      var i_570425684 = 0;
+      var i_570425772 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425684 < kxi_1291846763.patchLen)) break Label3;
-            i_1291846768 = i_570425684;
+          if (!(i_570425772 < kxi_1291846763.patchLen)) break Label3;
+            i_1291846768 = i_570425772;
             var p_1291846769 = nimCopy(null, kxi_1291846763.patches[i_1291846768], NTI1291845638);
             switch (p_1291846769.k) {
             case 0:
@@ -9417,21 +9388,21 @@ function applyPatch_1291846762(kxi_1291846763) {
               
               break;
             }
-            i_570425684 += 1;
+            i_570425772 += 1;
           }
       };
     };
     kxi_1291846763.patchLen = 0;
     Label4: {
       var i_1291846800 = 0;
-      var i_570425687 = 0;
+      var i_570425775 = 0;
       Label5: {
           Label6: while (true) {
-          if (!(i_570425687 < kxi_1291846763.patchLenV)) break Label6;
-            i_1291846800 = i_570425687;
+          if (!(i_570425775 < kxi_1291846763.patchLenV)) break Label6;
+            i_1291846800 = i_570425775;
             var p_1291846801 = nimCopy(null, kxi_1291846763.patchesV[i_1291846800], NTI1291845639);
             HEX5BHEX5DHEX3D_1325400858(p_1291846801.parent, p_1291846801.pos, p_1291846801.newChild);
-            i_570425687 += 1;
+            i_570425775 += 1;
           }
       };
     };
@@ -9601,13 +9572,13 @@ function tree_1325400926(kind_1325400927, kids_1325400928) {
     result_1325400929 = newVNode_1325400923(kind_1325400927);
     Label1: {
       var k_1325400942 = null;
-      var i_570425695 = 0;
+      var i_570425783 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425695 < (kids_1325400928).length)) break Label3;
-            k_1325400942 = kids_1325400928[i_570425695];
+          if (!(i_570425783 < (kids_1325400928).length)) break Label3;
+            k_1325400942 = kids_1325400928[i_570425783];
             add_1325400862(result_1325400929, k_1325400942);
-            i_570425695 += 1;
+            i_570425783 += 1;
           }
       };
     };
@@ -9633,18 +9604,18 @@ function setAttr_1392509240(s_1392509241, a_1392509242, value_1392509243) {
           s_1392509241.push("");
           Label3: {
             var j_1392509285 = 0;
-            var colontmp__570425703 = 0;
-            var colontmp__570425704 = 0;
-            colontmp__570425703 = (s_1392509241.length - 1);
-            colontmp__570425704 = (i_1392509244 + 3);
-            var res_570425706 = colontmp__570425703;
+            var colontmp__570425797 = 0;
+            var colontmp__570425798 = 0;
+            colontmp__570425797 = (s_1392509241.length - 1);
+            colontmp__570425798 = (i_1392509244 + 3);
+            var res_570425800 = colontmp__570425797;
             Label4: {
                 Label5: while (true) {
-                if (!(colontmp__570425704 <= res_570425706)) break Label5;
-                  j_1392509285 = res_570425706;
+                if (!(colontmp__570425798 <= res_570425800)) break Label5;
+                  j_1392509285 = res_570425800;
                   s_1392509241[j_1392509285] = s_1392509241[(j_1392509285 - 2)];
                   s_1392509241[(j_1392509285 - 1)] = s_1392509241[(j_1392509285 - 3)];
-                  res_570425706 -= 2;
+                  res_570425800 -= 2;
                 }
             };
           };
@@ -9675,13 +9646,13 @@ function style_1392509364(pairs_1392509365) {
     result_1392509366 = new Array(0);
     Label1: {
       var x_1392509383 = {Field0: 0, Field1: null};
-      var i_570425699 = 0;
+      var i_570425793 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425699 < (pairs_1392509365).length)) break Label3;
-            x_1392509383 = pairs_1392509365[i_570425699];
+          if (!(i_570425793 < (pairs_1392509365).length)) break Label3;
+            x_1392509383 = pairs_1392509365[i_570425793];
             setAttr_1392509327(result_1392509366, x_1392509383["Field0"], x_1392509383["Field1"]);
-            i_570425699 += 1;
+            i_570425793 += 1;
           }
       };
     };
@@ -9705,29 +9676,29 @@ function merge_1392509460(a_1392509461, b_1392509462) {
     result_1392509463 = new Array(0);
     Label1: {
       var i_1392509478 = 0;
-      var colontmp__570425709 = 0;
-      colontmp__570425709 = a_1392509461.length;
-      var i_570425710 = 0;
+      var colontmp__570425803 = 0;
+      colontmp__570425803 = a_1392509461.length;
+      var i_570425804 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425710 < colontmp__570425709)) break Label3;
-            i_1392509478 = i_570425710;
+          if (!(i_570425804 < colontmp__570425803)) break Label3;
+            i_1392509478 = i_570425804;
             result_1392509463.push(a_1392509461[i_1392509478]);
-            i_570425710 += 1;
+            i_570425804 += 1;
           }
       };
     };
     Label4: {
       var i_1392509499 = 0;
-      var colontmp__570425713 = 0;
-      colontmp__570425713 = (b_1392509462.length - 1);
-      var res_570425714 = 0;
+      var colontmp__570425807 = 0;
+      colontmp__570425807 = (b_1392509462.length - 1);
+      var res_570425808 = 0;
       Label5: {
           Label6: while (true) {
-          if (!(res_570425714 <= colontmp__570425713)) break Label6;
-            i_1392509499 = res_570425714;
+          if (!(res_570425808 <= colontmp__570425807)) break Label6;
+            i_1392509499 = res_570425808;
             setAttr_1392509240(result_1392509463, b_1392509462[i_1392509499], b_1392509462[(i_1392509499 + 1)]);
-            res_570425714 += 2;
+            res_570425808 += 2;
           }
       };
     };
@@ -9782,20 +9753,29 @@ function HEX3CHEX2D_1493172239(a_1493172240, b_1493172241) {
     Label1: {
       var key_1493172257 = 0;
       var val_1493172258 = [];
-      var i_570425718 = 0;
+      var i_570425812 = 0;
       Label2: {
           Label3: while (true) {
-          if (!(i_570425718 < (b_1493172241).length)) break Label3;
-            key_1493172257 = b_1493172241[i_570425718]["Field0"];
-            val_1493172258 = b_1493172241[i_570425718]["Field1"];
+          if (!(i_570425812 < (b_1493172241).length)) break Label3;
+            key_1493172257 = b_1493172241[i_570425812]["Field0"];
+            val_1493172258 = b_1493172241[i_570425812]["Field1"];
             kb_1493172243.push({Field0: key_1493172257, Field1: k_1493172228(val_1493172258)});;
-            i_570425718 += 1;
+            i_570425812 += 1;
           }
       };
     };
     result_1493172242 = HEX3CHEX2D_1493172235(a_1493172240, kb_1493172243);
 
   return result_1493172242;
+
+}
+
+function topPanel_1476395066() {
+  var result_1476395067 = null;
+
+    result_1476395067 = style_1392509364([nimCopy(null, {Field0: 171, Field1: k_1493172228([48])}, NTI1476395069), nimCopy(null, {Field0: 185, Field1: k_1493172228([49,48,48,37])}, NTI1476395069)]);
+
+  return result_1476395067;
 
 }
 
@@ -9837,19 +9817,19 @@ function setAttr_1325400777(n_1325400778, key_1325400779, val_1325400780) {
     else {
       Label1: {
         var i_1325400797 = 0;
-        var colontmp__570425721 = 0;
-        colontmp__570425721 = ((n_1325400778.attrs).length - 2);
-        var res_570425722 = 0;
+        var colontmp__570425815 = 0;
+        colontmp__570425815 = ((n_1325400778.attrs).length - 2);
+        var res_570425816 = 0;
         Label2: {
             Label3: while (true) {
-            if (!(res_570425722 <= colontmp__570425721)) break Label3;
-              i_1325400797 = res_570425722;
+            if (!(res_570425816 <= colontmp__570425815)) break Label3;
+              i_1325400797 = res_570425816;
               if ((n_1325400778.attrs[i_1325400797] == key_1325400779)) {
               n_1325400778.attrs[(i_1325400797 + 1)] = val_1325400780;
               break BeforeRet;
               }
               
-              res_570425722 += 2;
+              res_570425816 += 2;
             }
         };
       };
@@ -9871,6 +9851,103 @@ function text_1325400997(s_1325400998) {
 
 }
 
+function addEventListener_1325401045(n_1325401046, event_1325401047, handler_1325401048) {
+    n_1325401046.events.push({Field0: event_1325401047, Field1: handler_1325401048, Field2: null});;
+
+  
+}
+
+function addEventHandler_1291847384(n_1291847385, k_1291847386, action_1291847388, kxi_1291847389) {
+    
+function wrapper_1291847390(ev_1291847391, n_1291847392) {
+        action_1291847388();
+        if (!(kxi_1291847389.surpressRedraws)) {
+        redraw_1291847083(kxi_1291847389);
+        }
+        
+
+      
+    }
+
+    addEventListener_1325401045(n_1291847385, k_1291847386, wrapper_1291847390);
+
+  
+}
+
+function navEntry_570425402(page_570425403, url_570425404, caption_570425405) {
+    
+function HEX3Aanonymous_570425449() {
+        state_570425401[0].currentPage = page_570425403;
+
+      
+    }
+
+  var result_570425406 = null;
+
+    var tmp_570425437 = tree_1325400926(44, []);
+    tmp_570425437.style = HEX3CHEX2D_1493172239(box_1476395037(0), [{Field0: 118, Field1: [53,48,112,120]}]);
+    if (!((state_570425401[0].currentPage == page_570425403))) {
+    var tmp_570425443 = tree_1325400926(45, []);
+    setAttr_1325400777(tmp_570425443, "href", k_1493172228(url_570425404));
+    add_1325400862(tmp_570425443, text_1325400997(k_1493172228(caption_570425405)));
+    addEventHandler_1291847384(tmp_570425443, 0, HEX3Aanonymous_570425449, kxi__nimib_kxi_5);
+    add_1325400862(tmp_570425437, tmp_570425443);
+    }
+    else {
+    add_1325400862(tmp_570425437, text_1325400997(k_1493172228(caption_570425405)));
+    }
+    
+    result_570425406 = tmp_570425437;
+
+  return result_570425406;
+
+}
+
+function layout_570425529(body_570425530) {
+  var result_570425531 = null;
+
+    var tmp_570425532 = tree_1325400926(44, []);
+    tmp_570425532.style = vStack_1476395061(0);
+    var tmp_570425533 = tree_1325400926(44, []);
+    tmp_570425533.style = HEX3CHEX2D_1493172239(HEX3CHEX2D_1493172231(topPanel_1476395066(), hStack_1476395056(0)), [{Field0: 135, Field1: [49,48,112,120]}, {Field0: 57, Field1: [48,32,48,32,49,48,112,120]}]);
+    add_1325400862(tmp_570425533, navEntry_570425402(0, [35,47], [73,110,100,101,120]));
+    add_1325400862(tmp_570425533, navEntry_570425402(1, [35,47,102,111,114,109,115], [70,111,114,109,115]));
+    add_1325400862(tmp_570425532, tmp_570425533);
+    var tmp_570425534 = tree_1325400926(44, []);
+    Label1: {
+      var node_570425535 = null;
+      Label2: {
+        var i_570425787 = 0;
+        var colontmp__570425788 = 0;
+        colontmp__570425788 = (body_570425530.kids).length;
+        var i_570425789 = 0;
+        Label3: {
+            Label4: while (true) {
+            if (!(i_570425789 < colontmp__570425788)) break Label4;
+              i_570425787 = i_570425789;
+              node_570425535 = body_570425530.kids[i_570425787];
+              add_1325400862(tmp_570425534, node_570425535);
+              i_570425789 += 1;
+            }
+        };
+      };
+    };
+    add_1325400862(tmp_570425532, tmp_570425534);
+    result_570425531 = tmp_570425532;
+
+  return result_570425531;
+
+}
+
+function text_1325400994(s_1325400995) {
+  var result_1325400996 = null;
+
+    result_1325400996 = {kind: 0, text: toJSStr(s_1325400995), index: (-1), m_type: NTI1325400174, id: null, class: null, kids: [], attrs: [], events: [], style: null, styleVersion: 0, dom: null};
+
+  return result_1325400996;
+
+}
+
 function setAttr_1325400822(n_1325400823, key_1325400824, val_1325400825) {
     var Temporary1;
 
@@ -9886,122 +9963,159 @@ function setAttr_1325400822(n_1325400823, key_1325400824, val_1325400825) {
   
 }
 
-function createDom_570425392() {
-  var result_570425393 = null;
+function createDom_570425552() {
+  var result_570425553 = null;
 
-    var tmp_570425424 = tree_1325400926(44, []);
-    var tmp_570425425 = tree_1325400926(44, []);
-    tmp_570425425.style = vStack_1476395061(0);
-    var tmp_570425431 = tree_1325400926(44, []);
-    tmp_570425431.style = HEX3CHEX2D_1493172239(hStack_1476395056(1), [{Field0: 110, Field1: [49,48,112,120]}]);
-    var tmp_570425432 = tree_1325400926(44, []);
-    tmp_570425432.style = box_1476395037(2);
-    var tmp_570425433 = tree_1325400926(194, []);
-    setAttr_1325400777(tmp_570425433, "name", k_1493172228([102,105,114,115,116,95,110,97,109,101]));
-    tmp_570425433.style = style_1392509364([nimCopy(null, {Field0: 185, Field1: k_1493172228([49,48,48,37])}, NTI570425413)]);
-    add_1325400862(tmp_570425432, tmp_570425433);
-    add_1325400862(tmp_570425431, tmp_570425432);
-    var tmp_570425440 = tree_1325400926(44, []);
-    tmp_570425440.style = box_1476395037(1);
-    var tmp_570425441 = tree_1325400926(193, []);
-    setAttr_1325400777(tmp_570425441, "for", k_1493172228([102,105,114,115,116,95,110,97,109,101]));
-    add_1325400862(tmp_570425441, text_1325400997(k_1493172228([70,105,114,115,116,32,110,97,109,101,58])));
-    add_1325400862(tmp_570425440, tmp_570425441);
-    add_1325400862(tmp_570425431, tmp_570425440);
-    add_1325400862(tmp_570425425, tmp_570425431);
-    var tmp_570425442 = tree_1325400926(44, []);
-    tmp_570425442.style = HEX3CHEX2D_1493172239(hStack_1476395056(1), [{Field0: 110, Field1: [49,48,112,120]}]);
-    var tmp_570425443 = tree_1325400926(44, []);
-    tmp_570425443.style = box_1476395037(2);
-    var tmp_570425444 = tree_1325400926(194, []);
-    setAttr_1325400777(tmp_570425444, "name", k_1493172228([108,97,115,116,95,110,97,109,101]));
-    tmp_570425444.style = style_1392509364([nimCopy(null, {Field0: 185, Field1: k_1493172228([49,48,48,37])}, NTI570425439)]);
-    add_1325400862(tmp_570425443, tmp_570425444);
-    add_1325400862(tmp_570425442, tmp_570425443);
-    var tmp_570425445 = tree_1325400926(44, []);
-    tmp_570425445.style = box_1476395037(1);
-    var tmp_570425446 = tree_1325400926(193, []);
-    setAttr_1325400777(tmp_570425446, "for", k_1493172228([108,97,115,116,95,110,97,109,101]));
-    add_1325400862(tmp_570425446, text_1325400997(k_1493172228([76,97,115,116,32,110,97,109,101,58])));
-    add_1325400862(tmp_570425445, tmp_570425446);
-    add_1325400862(tmp_570425442, tmp_570425445);
-    add_1325400862(tmp_570425425, tmp_570425442);
-    var tmp_570425447 = tree_1325400926(44, []);
-    tmp_570425447.style = HEX3CHEX2D_1493172239(hStack_1476395056(1), [{Field0: 110, Field1: [49,48,112,120]}]);
-    var tmp_570425448 = tree_1325400926(44, []);
-    tmp_570425448.style = box_1476395037(2);
-    var tmp_570425449 = tree_1325400926(200, []);
-    setAttr_1325400777(tmp_570425449, "name", k_1493172228([97,98,111,117,116,95,109,101]));
-    tmp_570425449.style = style_1392509364([nimCopy(null, {Field0: 185, Field1: k_1493172228([49,48,48,37])}, NTI570425465)]);
-    add_1325400862(tmp_570425448, tmp_570425449);
-    add_1325400862(tmp_570425447, tmp_570425448);
-    var tmp_570425450 = tree_1325400926(44, []);
-    tmp_570425450.style = box_1476395037(1);
-    var tmp_570425451 = tree_1325400926(193, []);
-    setAttr_1325400777(tmp_570425451, "for", k_1493172228([97,98,111,117,116,95,109,101]));
-    add_1325400862(tmp_570425451, text_1325400997(k_1493172228([65,98,111,117,116,32,109,101,58])));
-    add_1325400862(tmp_570425450, tmp_570425451);
-    add_1325400862(tmp_570425447, tmp_570425450);
-    add_1325400862(tmp_570425425, tmp_570425447);
-    var tmp_570425452 = tree_1325400926(44, []);
-    tmp_570425452.style = HEX3CHEX2D_1493172239(hStack_1476395056(0), [{Field0: 110, Field1: [49,48,112,120]}]);
-    var tmp_570425453 = tree_1325400926(44, []);
-    tmp_570425453.style = box_1476395037(1);
-    var tmp_570425454 = tree_1325400926(194, []);
-    setAttr_1325400777(tmp_570425454, "type", k_1493172228([114,97,100,105,111]));
-    tmp_570425454.id = k_1493172228([119,104,105,116,101]);
-    setAttr_1325400777(tmp_570425454, "name", k_1493172228([99,111,108,111,114]));
-    setAttr_1325400822(tmp_570425454, "checked", true);
-    add_1325400862(tmp_570425453, tmp_570425454);
-    var tmp_570425455 = tree_1325400926(193, []);
-    setAttr_1325400777(tmp_570425455, "for", k_1493172228([119,104,105,116,101]));
-    add_1325400862(tmp_570425455, text_1325400997(k_1493172228([87,104,105,116,101])));
-    add_1325400862(tmp_570425453, tmp_570425455);
-    add_1325400862(tmp_570425452, tmp_570425453);
-    var tmp_570425456 = tree_1325400926(44, []);
-    tmp_570425456.style = box_1476395037(1);
-    var tmp_570425457 = tree_1325400926(194, []);
-    setAttr_1325400777(tmp_570425457, "type", k_1493172228([114,97,100,105,111]));
-    tmp_570425457.id = k_1493172228([98,108,117,101]);
-    setAttr_1325400777(tmp_570425457, "name", k_1493172228([99,111,108,111,114]));
-    add_1325400862(tmp_570425456, tmp_570425457);
-    var tmp_570425458 = tree_1325400926(193, []);
-    setAttr_1325400777(tmp_570425458, "for", k_1493172228([98,108,117,101]));
-    add_1325400862(tmp_570425458, text_1325400997(k_1493172228([66,108,117,101])));
-    add_1325400862(tmp_570425456, tmp_570425458);
-    add_1325400862(tmp_570425452, tmp_570425456);
-    var tmp_570425459 = tree_1325400926(44, []);
-    tmp_570425459.style = box_1476395037(1);
-    var tmp_570425460 = tree_1325400926(194, []);
-    setAttr_1325400777(tmp_570425460, "type", k_1493172228([114,97,100,105,111]));
-    tmp_570425460.id = k_1493172228([114,101,100]);
-    setAttr_1325400777(tmp_570425460, "name", k_1493172228([99,111,108,111,114]));
-    add_1325400862(tmp_570425459, tmp_570425460);
-    var tmp_570425461 = tree_1325400926(193, []);
-    setAttr_1325400777(tmp_570425461, "for", k_1493172228([114,101,100]));
-    add_1325400862(tmp_570425461, text_1325400997(k_1493172228([82,101,100])));
-    add_1325400862(tmp_570425459, tmp_570425461);
-    add_1325400862(tmp_570425452, tmp_570425459);
-    add_1325400862(tmp_570425425, tmp_570425452);
-    add_1325400862(tmp_570425424, tmp_570425425);
-    result_570425393 = tmp_570425424;
+    var tmp_570425554 = tree_1325400926(44, []);
+    switch (state_570425401[0].currentPage) {
+    case 0:
+      var tmp_570425555 = tree_1325400926(44, []);
+      var tmp_570425556 = tree_1325400926(21, []);
+      add_1325400862(tmp_570425556, text_1325400994([105,110,100,101,120]));
+      add_1325400862(tmp_570425555, tmp_570425556);
+      var tmp_570425557 = tree_1325400926(44, []);
+      tmp_570425557.style = hStack_1476395056(0);
+      var tmp_570425558 = tree_1325400926(44, []);
+      tmp_570425558.style = HEX3CHEX2D_1493172239(box_1476395037(1), [{Field0: 22, Field1: [115,111,108,105,100]}]);
+      var tmp_570425559 = tree_1325400926(32, []);
+      add_1325400862(tmp_570425559, text_1325400994([66,111,120,32,111,110,101]));
+      add_1325400862(tmp_570425558, tmp_570425559);
+      add_1325400862(tmp_570425557, tmp_570425558);
+      var tmp_570425560 = tree_1325400926(44, []);
+      tmp_570425560.style = HEX3CHEX2D_1493172239(box_1476395037(2), [{Field0: 22, Field1: [115,111,108,105,100]}]);
+      var tmp_570425561 = tree_1325400926(32, []);
+      add_1325400862(tmp_570425561, text_1325400994([66,111,120,32,116,119,111]));
+      add_1325400862(tmp_570425560, tmp_570425561);
+      add_1325400862(tmp_570425557, tmp_570425560);
+      add_1325400862(tmp_570425555, tmp_570425557);
+      add_1325400862(tmp_570425554, layout_570425529(tmp_570425555));
+      break;
+    case 1:
+      var tmp_570425562 = tree_1325400926(44, []);
+      var tmp_570425563 = tree_1325400926(21, []);
+      add_1325400862(tmp_570425563, text_1325400994([102,111,114,109,115]));
+      add_1325400862(tmp_570425562, tmp_570425563);
+      var tmp_570425564 = tree_1325400926(44, []);
+      tmp_570425564.style = style_1392509364([{Field0: 185, Field1: "500px"}]);
+      var tmp_570425571 = tree_1325400926(44, []);
+      tmp_570425571.style = vStack_1476395061(0);
+      var tmp_570425572 = tree_1325400926(44, []);
+      tmp_570425572.style = HEX3CHEX2D_1493172239(hStack_1476395056(1), [{Field0: 110, Field1: [49,48,112,120]}]);
+      var tmp_570425573 = tree_1325400926(44, []);
+      tmp_570425573.style = box_1476395037(2);
+      var tmp_570425574 = tree_1325400926(194, []);
+      setAttr_1325400777(tmp_570425574, "name", k_1493172228([102,105,114,115,116,95,110,97,109,101]));
+      tmp_570425574.style = style_1392509364([nimCopy(null, {Field0: 185, Field1: k_1493172228([49,48,48,37])}, NTI570425551)]);
+      add_1325400862(tmp_570425573, tmp_570425574);
+      add_1325400862(tmp_570425572, tmp_570425573);
+      var tmp_570425575 = tree_1325400926(44, []);
+      tmp_570425575.style = box_1476395037(1);
+      var tmp_570425576 = tree_1325400926(193, []);
+      setAttr_1325400777(tmp_570425576, "for", k_1493172228([102,105,114,115,116,95,110,97,109,101]));
+      add_1325400862(tmp_570425576, text_1325400997(k_1493172228([70,105,114,115,116,32,110,97,109,101,58])));
+      add_1325400862(tmp_570425575, tmp_570425576);
+      add_1325400862(tmp_570425572, tmp_570425575);
+      add_1325400862(tmp_570425571, tmp_570425572);
+      var tmp_570425577 = tree_1325400926(44, []);
+      tmp_570425577.style = HEX3CHEX2D_1493172239(hStack_1476395056(1), [{Field0: 110, Field1: [49,48,112,120]}]);
+      var tmp_570425578 = tree_1325400926(44, []);
+      tmp_570425578.style = box_1476395037(2);
+      var tmp_570425579 = tree_1325400926(194, []);
+      setAttr_1325400777(tmp_570425579, "name", k_1493172228([108,97,115,116,95,110,97,109,101]));
+      tmp_570425579.style = style_1392509364([nimCopy(null, {Field0: 185, Field1: k_1493172228([49,48,48,37])}, NTI570425577)]);
+      add_1325400862(tmp_570425578, tmp_570425579);
+      add_1325400862(tmp_570425577, tmp_570425578);
+      var tmp_570425580 = tree_1325400926(44, []);
+      tmp_570425580.style = box_1476395037(1);
+      var tmp_570425581 = tree_1325400926(193, []);
+      setAttr_1325400777(tmp_570425581, "for", k_1493172228([108,97,115,116,95,110,97,109,101]));
+      add_1325400862(tmp_570425581, text_1325400997(k_1493172228([76,97,115,116,32,110,97,109,101,58])));
+      add_1325400862(tmp_570425580, tmp_570425581);
+      add_1325400862(tmp_570425577, tmp_570425580);
+      add_1325400862(tmp_570425571, tmp_570425577);
+      var tmp_570425582 = tree_1325400926(44, []);
+      tmp_570425582.style = HEX3CHEX2D_1493172239(hStack_1476395056(1), [{Field0: 110, Field1: [49,48,112,120]}]);
+      var tmp_570425583 = tree_1325400926(44, []);
+      tmp_570425583.style = box_1476395037(2);
+      var tmp_570425584 = tree_1325400926(200, []);
+      setAttr_1325400777(tmp_570425584, "name", k_1493172228([97,98,111,117,116,95,109,101]));
+      tmp_570425584.style = style_1392509364([nimCopy(null, {Field0: 185, Field1: k_1493172228([49,48,48,37])}, NTI570425603)]);
+      add_1325400862(tmp_570425583, tmp_570425584);
+      add_1325400862(tmp_570425582, tmp_570425583);
+      var tmp_570425585 = tree_1325400926(44, []);
+      tmp_570425585.style = box_1476395037(1);
+      var tmp_570425586 = tree_1325400926(193, []);
+      setAttr_1325400777(tmp_570425586, "for", k_1493172228([97,98,111,117,116,95,109,101]));
+      add_1325400862(tmp_570425586, text_1325400997(k_1493172228([65,98,111,117,116,32,109,101,58])));
+      add_1325400862(tmp_570425585, tmp_570425586);
+      add_1325400862(tmp_570425582, tmp_570425585);
+      add_1325400862(tmp_570425571, tmp_570425582);
+      var tmp_570425587 = tree_1325400926(44, []);
+      tmp_570425587.style = HEX3CHEX2D_1493172239(hStack_1476395056(0), [{Field0: 110, Field1: [49,48,112,120]}]);
+      var tmp_570425588 = tree_1325400926(44, []);
+      tmp_570425588.style = box_1476395037(1);
+      var tmp_570425589 = tree_1325400926(194, []);
+      setAttr_1325400777(tmp_570425589, "type", k_1493172228([114,97,100,105,111]));
+      tmp_570425589.id = k_1493172228([119,104,105,116,101]);
+      setAttr_1325400777(tmp_570425589, "name", k_1493172228([99,111,108,111,114]));
+      setAttr_1325400822(tmp_570425589, "checked", true);
+      add_1325400862(tmp_570425588, tmp_570425589);
+      var tmp_570425590 = tree_1325400926(193, []);
+      setAttr_1325400777(tmp_570425590, "for", k_1493172228([119,104,105,116,101]));
+      add_1325400862(tmp_570425590, text_1325400997(k_1493172228([87,104,105,116,101])));
+      add_1325400862(tmp_570425588, tmp_570425590);
+      add_1325400862(tmp_570425587, tmp_570425588);
+      var tmp_570425591 = tree_1325400926(44, []);
+      tmp_570425591.style = box_1476395037(1);
+      var tmp_570425592 = tree_1325400926(194, []);
+      setAttr_1325400777(tmp_570425592, "type", k_1493172228([114,97,100,105,111]));
+      tmp_570425592.id = k_1493172228([98,108,117,101]);
+      setAttr_1325400777(tmp_570425592, "name", k_1493172228([99,111,108,111,114]));
+      add_1325400862(tmp_570425591, tmp_570425592);
+      var tmp_570425593 = tree_1325400926(193, []);
+      setAttr_1325400777(tmp_570425593, "for", k_1493172228([98,108,117,101]));
+      add_1325400862(tmp_570425593, text_1325400997(k_1493172228([66,108,117,101])));
+      add_1325400862(tmp_570425591, tmp_570425593);
+      add_1325400862(tmp_570425587, tmp_570425591);
+      var tmp_570425594 = tree_1325400926(44, []);
+      tmp_570425594.style = box_1476395037(1);
+      var tmp_570425595 = tree_1325400926(194, []);
+      setAttr_1325400777(tmp_570425595, "type", k_1493172228([114,97,100,105,111]));
+      tmp_570425595.id = k_1493172228([114,101,100]);
+      setAttr_1325400777(tmp_570425595, "name", k_1493172228([99,111,108,111,114]));
+      add_1325400862(tmp_570425594, tmp_570425595);
+      var tmp_570425596 = tree_1325400926(193, []);
+      setAttr_1325400777(tmp_570425596, "for", k_1493172228([114,101,100]));
+      add_1325400862(tmp_570425596, text_1325400997(k_1493172228([82,101,100])));
+      add_1325400862(tmp_570425594, tmp_570425596);
+      add_1325400862(tmp_570425587, tmp_570425594);
+      add_1325400862(tmp_570425571, tmp_570425587);
+      add_1325400862(tmp_570425564, tmp_570425571);
+      add_1325400862(tmp_570425562, tmp_570425564);
+      add_1325400862(tmp_570425554, layout_570425529(tmp_570425562));
+      break;
+    default: 
+      break;
+    }
+    result_570425553 = tmp_570425554;
 
-  return result_570425393;
+  return result_570425553;
 
 }
 var rootId_570425377 = to_570425365(parseJson_738203014([34,107,97,114,97,120,45,49,34]));
 var postRenderCallback_570425386 = [null];
-setRenderer_1291847327(createDom_570425392, toJSStr(rootId_570425377), postRenderCallback_570425386[0]);
+var state_570425401 = [({currentPage: 0})];
+setRenderer_1291847327(createDom_570425552, toJSStr(rootId_570425377), postRenderCallback_570425386[0]);
 </script>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../tutorial/basics.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../tutorial/forms.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next" href="../tutorial/layouts.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../changelog.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -10011,11 +10125,11 @@ setRenderer_1291847327(createDom_570425392, toJSStr(rootId_570425377), postRende
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../tutorial/basics.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../tutorial/forms.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next" href="../tutorial/layouts.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../changelog.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
