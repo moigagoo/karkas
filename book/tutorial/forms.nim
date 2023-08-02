@@ -4,7 +4,7 @@ import nimib, nimibook
 nbInit(theme = useNimibook)
 
 nbText: """
-## Forms
+# Forms
 
 Building web forms is one of basic tasks in web development. Let's build a form with Karkas by combining stacks and putting the form elements in boxes.
 

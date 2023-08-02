@@ -1,5 +1,4 @@
 import karax/[karaxdsl, kdom, vdom]
-import kraut/context
 import karkas
 
 import pages
