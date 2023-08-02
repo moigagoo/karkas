@@ -8,7 +8,7 @@
 -   [d]—docs improvement
 
 
-## 1.0.0 (February 27, 2019)
+## 1.0.0 (August 2, 2023)
 
 -   🎉 Initial release.
 
