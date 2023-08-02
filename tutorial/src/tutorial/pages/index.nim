@@ -4,13 +4,14 @@ import karkas
 
 import ../pages
 import ../state
+import ../layout
 
 
 proc render*(context: Context): VNode =
   currentPage = Page.index
   document.title = "index"
 
-  buildHtml(tdiv):
+  layout.render buildHtml(tdiv) do:
     h1: text "index"
     tdiv(style = hStack()):
       tdiv(style = box(size = 1) <- {border: "solid"}):

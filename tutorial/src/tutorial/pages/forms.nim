@@ -4,13 +4,14 @@ import karkas
 
 import ../pages
 import ../state
+import ../layout
 
 
 proc render*(context: Context): VNode =
   currentPage = Page.forms
   document.title = "forms"
 
-  buildHtml(tdiv):
+  layout.render buildHtml(tdiv) do:
     h1: text "forms"
 
     tdiv(style = {width: "500px"}):
