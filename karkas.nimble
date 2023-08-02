@@ -1,15 +1,15 @@
 # Package
 
-version       = "0.1.0"
+version       = "1.0.0"
 author        = "Constantine Molchanov"
-description   = "Component system and UI kit for Karax."
+description   = "Layout helpers and sugar for Karax"
 license       = "MIT"
 srcDir        = "src"
 
 
 # Dependencies
 
-requires "nim >= 1.6.14"
+requires "nim >= 2.0.0"
 requires "karax >= 1.3.0"
 
 taskRequires "setupBook", "nimib >= 0.3.8", "nimibook >= 0.3.1"
