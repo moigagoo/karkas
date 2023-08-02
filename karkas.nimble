@@ -1,28 +1,39 @@
 # Package
 
-version       = "0.1.0"
+version       = "1.0.0"
 author        = "Constantine Molchanov"
-description   = "Component system and UI kit for Karax."
+description   = "Layout helpers and sugar for Karax"
 license       = "MIT"
 srcDir        = "src"
-bin           = @["karkas"]
 
 
 # Dependencies
 
-requires "nim >= 1.9.3"
-requires "karax >= 1.2.3", "kraut >= 1.0.2"
+requires "nim >= 2.0.0"
+requires "karax >= 1.3.0"
 
-taskRequires "serve", "nimhttpd >= 1.5.1"
+taskRequires "setupBook", "nimib >= 0.3.8", "nimibook >= 0.3.1"
 
 
 # Tasks
 
-task make, "Build the app":
-  exec "karun src/karkas.nim"
+task setupBook, "Compiles the nimibook CLI-binary used for generating the docs":
+  exec "nim c -d:release nbook.nim"
 
-task serve, "Serve the app with a local server":
-  echo "The app is served at: http://localhost:1337/app.html#/"
-  echo()
-  exec "nimhttpd"
+before book:
+  rmDir "docs"
+  exec "nimble setupBook"
+
+task book, "Generate book":
+  exec "./nbook".toExe & " --mm:orc --deepcopy:on update"
+  exec "./nbook".toExe & " --mm:orc --deepcopy:on build"
+
+after book:
+  cpFile("CNAME", "docs/CNAME")
+
+before docs:
+  rmDir "docs/apidocs"
+
+task docs, "Generate docs":
+  exec "nimble doc --outdir:docs/apidocs --project --index:on src/karkas"
 

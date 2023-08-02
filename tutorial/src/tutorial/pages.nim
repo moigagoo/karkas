@@ -1,4 +1,4 @@
 type Page* = enum
   notfound
   index
-  about
+  forms

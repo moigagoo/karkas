@@ -1,12 +1,5 @@
-import karax/karax
-
-import kraut
-
-import karkas/routes
-import karkas/pages/notfound
+import karkas/[styles, sugar]
 
 
-let renderer = routeRenderer(routes.routes, defaultRenderer = notfound.render)
-
-setRenderer(renderer)
+export styles, sugar
 
