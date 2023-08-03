@@ -97,7 +97,7 @@ nbText: """
 
 **Stack** is a rectangular container for boxes. There are two kinds of stacks: vertical and horizontal.
 
-Let's put our boxes into a stacks and play with the way they fit inside them.
+Let's put our boxes into a stack and play with the way they fit inside it.
 
 1. Add a new `tdiv` with style `hStack`:
 
